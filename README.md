@@ -96,8 +96,8 @@ Load Add-in
 -----------
 
 From the developer tab (see above), select “PowerPoint Add-Ins” \> “Add New”.
-Find the add-in that you want to load
-(\\\\isilon-ops\\NSED\\NSITD\\LDS\\Josh\\Office AddIns) \> Open. If you don’t
+Find the add-in that you want to load 
+(PPT Toolbar All Macros in this Repo) \> Open. If you don’t
 see the “Add-In” toolbar appear at the top then select “Unload” and then “Load”
 to reset the toolbar. This add-in should remain loaded until you completely
 close PowerPoint.
