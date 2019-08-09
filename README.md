@@ -40,10 +40,8 @@ Remove Double Spaces
 Searches every object on every slide and if there is text that has two spaces in
 sequence then it will replace those spaces with a single space.
 
-[./media/image2.png](./media/image2.png)
-----------------------------------------
-
 Create Learner Textboxes on Slides
+----------------------------------
 
 This macro will create 3 textboxes on the outside boundaries of every slide:
 learner notes, minutes, and objective. Minutes should be a number only and
@@ -52,10 +50,10 @@ as it will reposition the textboxes if they already exist and are skewed and it
 will create the textboxes if they are missing. This macro pairs with the macros:
 “Create Learner textboxes on Notes” and “Copy Learner box slides to notes”.
 
-[./media/image3.png](./media/image3.png)
-----------------------------------------
+![](media/924b2003b1a3ddcb34707552f9dfb529.png)
 
 Create Learner Textboxes on Notes
+---------------------------------
 
 This macro will create 3 textboxes on the notes handout page of each slide:
 learner notes, minutes, and objective. Minutes should be a number only and
@@ -64,10 +62,10 @@ as it will reposition the textboxes if they already exist and are skewed and it
 will create the textboxes if they are missing. This macro pairs with the macros:
 “Create Learner textboxes on Slides” and “Copy Learner box slides to notes”.
 
+![](media/2b0ce089190a3442f20c53dcb2848f6b.png)
+
 Copy learner box slides to Notes
 --------------------------------
-
-![](media/b2666f5762a4bffd0f87e56069a12107.png)
 
 This macro will copy the contents of the following textboxes on a slide to their
 notes handout equivalent: learner notes, objective, minutes. This macro will
@@ -81,6 +79,8 @@ Prompts the user to hide or show presenter notes on the notes page. This macro
 will toggle the visibility of the presenter notes on the notes handout pages of
 every slide. Great for outputting a presenter guide and then a participant
 guide.
+
+![](media/b2666f5762a4bffd0f87e56069a12107.png)
 
 Installing Toolbar
 ==================
