@@ -1,6 +1,5 @@
 Option Explicit
 
-
 Sub RemoveAllAnimations()
 'PURPOSE: Remove All PowerPoint Animations From Slides
 'SOURCE: www.TheSpreadsheetGuru.com/the-code-vault

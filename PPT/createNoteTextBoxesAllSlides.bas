@@ -229,4 +229,3 @@ Sub createShape(sld As Slide, shpName As String)
     
 End Sub
 
-

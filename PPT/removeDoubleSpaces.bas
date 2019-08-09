@@ -49,7 +49,6 @@ End If
 
 Next currentSlide
 
-
 MsgBox ("All Done. " & totalShapeCount & " text shapes have been updated on " & ActivePresentation.Slides.Count & " slides.")
 
 End Sub

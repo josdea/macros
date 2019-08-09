@@ -1,7 +1,6 @@
 'unfinished multi find replace function works on slides only not notes
 'find replace notes works with strings i think but not line breaks
 
-
 Sub Multi_FindReplace()
 'PURPOSE: Find & Replace a list of text/values throughout entire PowerPoint presentation
 'SOURCE: www.TheSpreadsheetGuru.com/the-code-vault
@@ -55,9 +54,7 @@ ReplaceList = Array(" ", vbCrLf, vbCr, vbLf)
   Next sld
 MsgBox ("all done")
 
-
 End Sub
-
 
 Sub findReplaceNotes()
 
@@ -81,7 +78,6 @@ For Each oPres In Application.Presentations
 Next oPres
 MsgBox (" all done")
 End Sub
-
 
 Sub ReplaceText(oShp As Object, FindString As String, ReplaceString As String)
 Dim oTxtRng As TextRange

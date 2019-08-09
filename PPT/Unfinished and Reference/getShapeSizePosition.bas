@@ -12,7 +12,6 @@ Sub OutputSlides()
             Debug.Print "Shape #" & shp.Id & " (" & shp.Name & ") - Slide: " & sld.SlideNumber & " Position: " & shp.Left & "," & shp.Top _
                  ; " Size: " & shp.Width & "x" & shp.Height
 
-
             For Each oAction In shp.ActionSettings
                 On Error Resume Next
 

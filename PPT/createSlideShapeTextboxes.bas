@@ -1,6 +1,5 @@
 Option Explicit
 
-
 Sub createSlideTextBoxesAllSlides()
      Debug.Print "Start of Create all TextBoxes on all slides";
      
@@ -88,7 +87,6 @@ Sub iterateSlideShapes(sld As Slide)
     
 End Sub
 
-
 Sub createSlideShapeTextbox(sld As Slide, shpLeftPosition As Long, shpTopPosition As Long, shpWidth As Long, shpHeight As Long, shpName As String, shpText As String, shpFontSize As Integer)
     
     Dim shp                                       As Shape
@@ -104,7 +102,4 @@ Sub createSlideShapeTextbox(sld As Slide, shpLeftPosition As Long, shpTopPositio
     End With
     
 End Sub
-
-
-
 

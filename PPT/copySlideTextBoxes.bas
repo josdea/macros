@@ -1,6 +1,5 @@
 Option Explicit
 
-
 Sub copySlideTextBoxes()
     
     Debug.Print "Start of copy slide textboxes to notes";
