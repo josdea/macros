@@ -1,3 +1,5 @@
+
+
 Option Explicit
 Sub ChangeSpellCheckLanguage()
 Dim currentSlide As Integer 'current slide number
@@ -44,10 +46,7 @@ End If
 
 Next currentSlide
 
-
 MsgBox ("All Done. Total Shapes Set: " & totalShapeCount)
 
 End Sub
-
-
 

@@ -1,6 +1,5 @@
 Option Explicit
 
-
 Sub combineAllPPTX()
 '  Insert all slides from all presentations in the same folder as this one
 '  INTO this one; do not attempt to insert THIS file into itself, though.
@@ -12,13 +11,10 @@ Sub combineAllPPTX()
 
 ' If MsgBox("Are you sure you want to combine all the PPTX files in the current folder? You should be in the first file and the order of the files will be alphabetical. This means renameing them to 01, 02, 03 etc. if using numbers", (vbYesNo + vbQuestion), "Combine all?") = vbYes Then
 
-
     ' Change "*.PPT" to "*.PPTX" or whatever if necessary:
     EnumerateFiles ActivePresentation.Path & "\", "*.PPTX", vArray
 
 If MsgBox("Are you sure you want to combine all " & UBound(vArray) & " PPTX files in the current folder? You should be in the first file and the order of the files will be alphabetical. This may require renaming them to 01, 02, 03 etc. if using numbers", (vbYesNo + vbQuestion), "Combine all?") = vbYes Then
-
-
 
     ActivePresentation.SectionProperties.AddBeforeSlide 1, "Module 1"
 
@@ -50,7 +46,6 @@ MsgBox ("Action canceled.")
 
   End If
 
-
 End Sub
 
 Sub EnumerateFiles(ByVal sDirectory As String, _
@@ -72,10 +67,4 @@ Sub EnumerateFiles(ByVal sDirectory As String, _
     Loop
 
 End Sub
-
-
-
-
-
-
 

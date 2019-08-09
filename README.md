@@ -108,9 +108,3 @@ Error or Remove Add-In
 If there is an issue or you need a newer version then access the developer tab
 \> “Powerpoint Add-Ins” and select the add-in and then select the “remove”
 button. Reopen PowerPoint.
-
-Video Demos
-===========
-
-[\\\\isilon-ops\\NSED\\NSITD\\LDS\\Josh\\Office AddIns\\Video
-Demos](file:///\\isilon-ops\NSED\NSITD\LDS\Josh\Office%20AddIns\Video%20Demos)
