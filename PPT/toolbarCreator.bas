@@ -66,6 +66,15 @@ Sub Auto_Open()
         .FaceId = 7385
     End With
 
+     Dim btnCountWords                            As CommandBarButton
+    Set btnCountWords = oToolbar.Controls.Add(Type:=msoControlButton)
+    With btnCountWords
+        .Caption = "Count Slide Words"
+        .OnAction = "countWords"
+        .Style = msoButtonIconAndCaption        'change to msoButtonIconAndCaption to use the icon below
+        .FaceId = 7385
+    End With
+
     Dim btncreateSlideTextboxes                            As CommandBarButton
     Set btncreateSlideTextboxes = oToolbar.Controls.Add(Type:=msoControlButton)
     With btncreateSlideTextboxes

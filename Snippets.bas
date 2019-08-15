@@ -118,3 +118,19 @@ Sub iterateNoteShapes(sld As Slide)
     Next shp
     
 End Sub
+
+
+' Below add a variable to be used between macro runs
+Sub AddDocumentVariable() 
+ ActiveDocument.Variables.Add Name:="Age", Value:=12 
+End Sub
+The following example uses the Value property with a Variable object to return the value of a document variable.
+
+VB
+
+Copy
+Sub UseDocumentVariable() 
+ Dim intAge As Integer 
+ intAge = ActiveDocument.Variables("Age").Value 
+End Sub
+' end of sample of stored variable between macro runs
