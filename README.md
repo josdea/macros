@@ -1,4 +1,4 @@
-![](media/6e7e24b0d251f41c8690ffc31af6d363.png)
+![](media/2f6a1c2f61a3a667bbc728d322b2e18b.png)
 
 Macros (as of Aug 9, 2019)
 ==========================
@@ -40,8 +40,16 @@ Remove Double Spaces
 Searches every object on every slide and if there is text that has two spaces in
 sequence then it will replace those spaces with a single space.
 
+Count Slide Words
+-----------------
+
+Counts the words on all slides and reports the average word count per slide as
+well as the slides that have the least and most words.
+
+[./media/image2.png](./media/image2.png)
+----------------------------------------
+
 Create Learner Textboxes on Slides
-----------------------------------
 
 This macro will create 3 textboxes on the outside boundaries of every slide:
 learner notes, minutes, and objective. Minutes should be a number only and
@@ -50,10 +58,10 @@ as it will reposition the textboxes if they already exist and are skewed and it
 will create the textboxes if they are missing. This macro pairs with the macros:
 “Create Learner textboxes on Notes” and “Copy Learner box slides to notes”.
 
-![](media/924b2003b1a3ddcb34707552f9dfb529.png)
+[./media/image3.png](./media/image3.png)
+----------------------------------------
 
 Create Learner Textboxes on Notes
----------------------------------
 
 This macro will create 3 textboxes on the notes handout page of each slide:
 learner notes, minutes, and objective. Minutes should be a number only and
@@ -62,10 +70,10 @@ as it will reposition the textboxes if they already exist and are skewed and it
 will create the textboxes if they are missing. This macro pairs with the macros:
 “Create Learner textboxes on Slides” and “Copy Learner box slides to notes”.
 
-![](media/2b0ce089190a3442f20c53dcb2848f6b.png)
-
 Copy learner box slides to Notes
 --------------------------------
+
+![](media/b2666f5762a4bffd0f87e56069a12107.png)
 
 This macro will copy the contents of the following textboxes on a slide to their
 notes handout equivalent: learner notes, objective, minutes. This macro will
@@ -79,8 +87,6 @@ Prompts the user to hide or show presenter notes on the notes page. This macro
 will toggle the visibility of the presenter notes on the notes handout pages of
 every slide. Great for outputting a presenter guide and then a participant
 guide.
-
-![](media/b2666f5762a4bffd0f87e56069a12107.png)
 
 Installing Toolbar
 ==================
@@ -96,8 +102,8 @@ Load Add-in
 -----------
 
 From the developer tab (see above), select “PowerPoint Add-Ins” \> “Add New”.
-Find the add-in that you want to load 
-(PPT Toolbar All Macros in this Repo) \> Open. If you don’t
+Find the add-in that you want to load
+(\\\\isilon-ops\\NSED\\NSITD\\LDS\\Josh\\Office AddIns) \> Open. If you don’t
 see the “Add-In” toolbar appear at the top then select “Unload” and then “Load”
 to reset the toolbar. This add-in should remain loaded until you completely
 close PowerPoint.
@@ -108,3 +114,9 @@ Error or Remove Add-In
 If there is an issue or you need a newer version then access the developer tab
 \> “Powerpoint Add-Ins” and select the add-in and then select the “remove”
 button. Reopen PowerPoint.
+
+Video Demos
+===========
+
+[\\\\isilon-ops\\NSED\\NSITD\\LDS\\Josh\\Office AddIns\\Video
+Demos](file:///\\isilon-ops\NSED\NSITD\LDS\Josh\Office%20AddIns\Video%20Demos)
