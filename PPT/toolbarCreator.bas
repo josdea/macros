@@ -57,6 +57,15 @@ Sub Auto_Open()
         .FaceId = 7385
     End With
 
+        Dim btngoToNextImage                            As CommandBarButton
+    Set btngoToNextImage = oToolbar.Controls.Add(Type:=msoControlButton)
+    With btngoToNextImage
+        .Caption = "Go to Next Image"
+        .OnAction = "goToNextImage"
+        .Style = msoButtonIconAndCaption        'change to msoButtonIconAndCaption to use the icon below
+        .FaceId = 7385
+    End With
+
    Dim btnRemoveDoubleSpaces                            As CommandBarButton
     Set btnRemoveDoubleSpaces = oToolbar.Controls.Add(Type:=msoControlButton)
     With btnRemoveDoubleSpaces
@@ -71,6 +80,24 @@ Sub Auto_Open()
     With btnCountWords
         .Caption = "Count Slide Words"
         .OnAction = "countWords"
+        .Style = msoButtonIconAndCaption        'change to msoButtonIconAndCaption to use the icon below
+        .FaceId = 7385
+    End With
+
+    Dim btngoToSlide                            As CommandBarButton
+    Set btngoToSlide = oToolbar.Controls.Add(Type:=msoControlButton)
+    With btngoToSlide
+        .Caption = "Go to Slide"
+        .OnAction = "goToSlide"
+        .Style = msoButtonIconAndCaption        'change to msoButtonIconAndCaption to use the icon below
+        .FaceId = 7385
+    End With
+
+   Dim btnResetToFontMaster                            As CommandBarButton
+    Set btnResetToFontMaster = oToolbar.Controls.Add(Type:=msoControlButton)
+    With btnResetToFontMaster
+        .Caption = "Reset to Theme Font"
+        .OnAction = "resetToFontMaster"
         .Style = msoButtonIconAndCaption        'change to msoButtonIconAndCaption to use the icon below
         .FaceId = 7385
     End With

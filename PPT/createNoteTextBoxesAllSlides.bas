@@ -1,5 +1,5 @@
 Option Explicit
-
+' TODO this should read from first slide and duplicate all sizes and positions to all others
 Sub createNoteTextBoxesAllSlides()
     
     ' TODO run loop and watch for points sizes and dimension of first slide shapes, add resize functions for the other obejcts
