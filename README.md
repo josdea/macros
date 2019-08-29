@@ -34,6 +34,12 @@ swapping out translated videos. It will always search the currently displayed
 slide as well so the user may have to advance to the next slide to continue
 searching.
 
+Go to Next Video
+----------------
+
+Start on slide 1 and press the button. The macro will search forward, and the
+macro will stop on the next slide that contains an image object.
+
 Remove Double Spaces
 --------------------
 
@@ -45,6 +51,21 @@ Count Slide Words
 
 Counts the words on all slides and reports the average word count per slide as
 well as the slides that have the least and most words.
+
+Go to Slide
+-----------------
+
+Prompts the user for a slide number to quickly go to that slide. Great for large presentations.
+
+Reset to Theme Font
+-----------------
+
+Resets all titles, notes, and text to the main theme font.
+
+Export all Comments
+-----------------
+
+Exports all comments throughout the document to a text file which is saved on the desktop and titled PPT_Comments.
 
 [./media/image2.png](./media/image2.png)
 ----------------------------------------

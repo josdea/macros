@@ -102,6 +102,16 @@ Sub Auto_Open()
         .FaceId = 7385
     End With
 
+   Dim btnExportCommentsToDisk                            As CommandBarButton
+    Set btnExportCommentsToDisk = oToolbar.Controls.Add(Type:=msoControlButton)
+    With btnExportCommentsToDisk
+        .Caption = "Export Comments to File"
+        .OnAction = "exportCommentsToDisk"
+        .Style = msoButtonIconAndCaption        'change to msoButtonIconAndCaption to use the icon below
+        .FaceId = 7385
+    End With
+
+
     Dim btncreateSlideTextboxes                            As CommandBarButton
     Set btncreateSlideTextboxes = oToolbar.Controls.Add(Type:=msoControlButton)
     With btncreateSlideTextboxes
