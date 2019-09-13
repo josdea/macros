@@ -23,7 +23,7 @@ Sub createSlideTextBoxesAllSlides()
     
 End Sub
 
-Sub iterateSlideShapes(sld As Slide)
+Sub iterateSlideShapes(sld As Slide) 
     
     Dim shp                                       As Shape        ' declare shape object
     Dim shapeCount                                As Integer

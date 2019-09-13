@@ -3,11 +3,11 @@ Option Explicit
 ' TODO think about pros cons between named shaped vs placeholders, use current debug to see positions and look into adding them programatically to slides that already exist
 
 Sub main()
-    Debug.Print "Start of Main";
+    Debug.Print "Start of Main"
     
     iterateSlides
     
-    Debug.Print "All Done";
+    Debug.Print "All Done"
      If Not CommandBars.GetPressedMso("SelectionPane") Then CommandBars.ExecuteMso ("SelectionPane")
     MsgBox "All Done"
     
@@ -184,7 +184,7 @@ Sub createSlideShapeTextbox(sld As Slide, shpLeftPosition As Long, shpTopPositio
     
 End Sub
 
-Function getSectionName(sld As Slide) As String
+Function getSectionName(sld As Slide) As String  'TODO see STARTER for a better version of this
     Dim sectionCount                              As Long        ' total sections in ppt
     Dim sectionIndex                              As Long        ' section id of current slide
     
