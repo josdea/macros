@@ -1,231 +1,242 @@
 Option Explicit
-' TODO this should read from first slide and duplicate all sizes and positions to all others
+
 Sub createNoteTextBoxesAllSlides()
-    
-    ' TODO run loop and watch for points sizes and dimension of first slide shapes, add resize functions for the other obejcts
-    
-    Debug.Print "Start of Create all TextBoxes on notes slides";
     ActiveWindow.ViewType = ppViewNotesPage
     Dim sld                                       As Slide        ' declare slide object
     
     For Each sld In ActivePresentation.Slides        ' iterate slides
-        sld.Select
         Debug.Print "Slide " & sld.SlideNumber & " of " & ActivePresentation.Slides.Count
-        
         iterateNotesPageShapes sld        ' Call to iterate shapes on slide
-        
     Next sld        ' end of iterate slides
-    
-    Debug.Print "All done creating notes textboxes";
     If Not CommandBars.GetPressedMso("SelectionPane") Then CommandBars.ExecuteMso ("SelectionPane")
-    MsgBox "All done creating textboxes on slides"
+    MsgBox "All done creating textboxes On notes"
     
 End Sub
 
 Sub iterateNotesPageShapes(sld As Slide)
-    
-    Dim shp                                       As Shape        ' declare shape object
-    Dim hasModuleTitle                            As Boolean
-    Dim hasLearnerNotes                           As Boolean
-    Dim hasObjective                              As Boolean
-    Dim hasMinutes                                As Boolean
-    
-    hasModuleTitle = False
-    hasLearnerNotes = False
-    hasObjective = False
-    hasMinutes = False
+    Dim shp                                       As Shape
+    Dim hasModuleTitle                            As Boolean: hasModuleTitle = False
+    Dim hasLearnerNotes                           As Boolean: hasLearnerNotes = False
+    Dim hasObjective                              As Boolean: hasObjective = False
+    Dim hasMinutes                                As Boolean: hasMinutes = False
     
     For Each shp In sld.NotesPage.Shapes
-        
         Select Case shp.name
             Case Is = "Objective"        ' objective
                 hasObjective = True
-                
-                updateShapePosition shp, 5.5, 9.4        ' reposition the shape
-                updateShapeSize shp, 2, 0.3        'resize the shape
-                shp.TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                shp.TextFrame2.WordWrap = msoFalse        ' no wrapping
-                shp.TextEffect.FontItalic = msoTrue
-                shp.TextEffect.Alignment = msoTextEffectAlignmentRight
-                
-                
-                ' updateSizePosition shp, 5.5, 0.3, 2, 0.3, "Objective", "", 11
+                Call updateObjective(sld, shp)
             Case Is = "Minutes"
                 hasMinutes = True
-                
-                updateShapePosition shp, 0, 9.4        ' reposition the shape
-                updateShapeSize shp, 5.5, 0.3        'resize the shape
-                shp.TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                shp.TextFrame2.WordWrap = msoFalse        ' no wrapping
-                
-                'updateSizePosition shp, 0, 676.8, 144, 21.6, "Minutes", "Mins", 11
+                Call updateMinutes(sld, shp)
             Case Is = "ModuleTitle"
                 hasModuleTitle = True
-                updateShapePosition shp, 1, 0        ' reposition the shape
-                updateShapeSize shp, 5.5, 0.3        'resize the shape
-                shp.TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                shp.TextFrame2.WordWrap = msoFalse        ' no wrapping
-                shp.TextEffect.Alignment = msoTextEffectAlignmentCentered
-                
-                ' updateSizePosition shp, 0.75, 0, 6, 0.3, "ModuleTitle", "", 11
+                Call updateModuleTitle(sld, shp)
             Case Is = "LearnerNotes"
                 hasLearnerNotes = True
-                
-                updateShapePosition shp, 0, 3        ' reposition the shape
-                updateShapeSize shp, 4.75, 6.3        'resize the shape
-                
-                With shp
-                    .TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                    .TextFrame2.WordWrap = msoTrue        ' no wrapping for slide number
-                    .TextEffect.FontItalic = msoFalse
-                    .TextEffect.FontBold = msoFalse
-                    .TextEffect.fontSize = 11
-                    .TextFrame.TextRange.Font.name = "+mn-lt"
-                    .TextFrame.TextRange.Font.underline = False
-                    
-                End With
-                
-                'updateSizePosition shp, 0, 3, 4.75, 6.25, "LearnerNotes", "", 11
+                Call updateLearnerNotes(sld, shp)
             Case Else
-                
                 If shp.Type = msoPlaceholder Then        ' check if its a placeholder
                 Select Case shp.PlaceholderFormat.Type        ' type of placeholder
                     Case Is = ppPlaceholderFooter        ' footer shape
-                        updateShapePosition shp, 0, 9.7        ' reposition the shape
-                        updateShapeSize shp, 5.5, 0.3        'resize the shape
-                        shp.TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                        shp.TextFrame2.WordWrap = msoFalse        ' no wrapping for footer
-                        
-                    Case Is = ppPlaceholderSlideNumber ' Slide Number
-                        updateShapePosition shp, 5.5, 9.7        ' reposition the shape
-                        updateShapeSize shp, 2, 0.3        'resize the shape
-                        shp.TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                        shp.TextFrame2.WordWrap = msoFalse        ' no wrapping for slide number
-                        shp.TextEffect.Alignment = msoTextEffectAlignmentRight
-                        
-                    Case Is = ppPlaceholderBody ' Presenter notes
-                        updateShapePosition shp, 4.75, 0.7        ' reposition the shape
-                        updateShapeSize shp, 2.75, 8.6        'resize the shape
-                        With shp
-                            .TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                            .TextFrame2.WordWrap = msoTrue        ' no wrapping for slide number
-                            .TextEffect.FontItalic = msoFalse
-                            .TextEffect.FontBold = msoFalse
-                            .TextEffect.fontSize = 11
-                            .TextFrame.TextRange.Font.name = "+mn-lt"
-                            .TextFrame.TextRange.Font.underline = False
-                            .Fill.ForeColor.RGB = RGB(255, 255, 255)
-                        End With
-                        
-                    Case Is = ppPlaceholderTitle ' Slide Image Placeholder
-                        
-                        updateShapePosition shp, 0.5, 0.7        ' reposition the shape
-                        updateShapeSize shp, 4, 2.25        'resize the shape
-                        
+                        Call updateFooter(sld, shp)
+                    Case Is = ppPlaceholderSlideNumber        ' Slide Number
+                        Call updateSlideNumber(sld, shp)
+                    Case Is = ppPlaceholderBody        ' Presenter notes
+                        Call updatePresenterNotes(sld, shp)
+                    Case Is = ppPlaceholderTitle        ' Slide Image Placeholder
+                        Call updateSlideImagePlaceholder(sld, shp)
                     Case Else
-                        
                 End Select
-                
             End If
-            
-            ' Debug.Print "NOTE: should not reach this point unless there is another text placeholder on the slide TODO"
     End Select        ' end of case
-    
-    '    End If        ' end of textframe has text
-    
 Next shp
 
 If hasObjective = False Then
     Set shp = sld.NotesPage.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, Left:=0, Top:=0, Width:=1, Height:=1)
-    shp.name = "Objective"
-    updateShapePosition shp, 5.5, 9.4        ' reposition the shape
-    updateShapeSize shp, 2, 0.3        'resize the shape
-    shp.TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-    shp.TextFrame2.WordWrap = msoFalse        ' no wrapping for slide number
-    shp.TextEffect.FontItalic = msoTrue
-    shp.TextEffect.Alignment = msoTextEffectAlignmentRight
-    'createSlideShapeTextbox sld, 5.5 * 72, 0.3, 2, 0.3, "Objective", "Object", 11
+    Call updateObjective(sld, shp)
 End If
 If hasMinutes = False Then
-Set shp = sld.NotesPage.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, Left:=0, Top:=0, Width:=1, Height:=1)
-    shp.name = "Minutes"
-                    updateShapePosition shp, 0, 9.4        ' reposition the shape
-                updateShapeSize shp, 5.5, 0.3        'resize the shape
-                shp.TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                shp.TextFrame2.WordWrap = msoFalse        ' no wrapping
-    
-    'createSlideShapeTextbox sld, 0, 676.8, 144, 21.6, "Minutes", "Mins", 11
+    Set shp = sld.NotesPage.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, Left:=0, Top:=0, Width:=1, Height:=1)
+    Call updateMinutes(sld, shp)
 End If
-
 If hasModuleTitle = False Then
-Set shp = sld.NotesPage.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, Left:=0, Top:=0, Width:=1, Height:=1)
-    shp.name = "ModuleTitle"
-                    updateShapePosition shp, 1, 0        ' reposition the shape
-                updateShapeSize shp, 5.5, 0.3        'resize the shape
-                shp.TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                shp.TextFrame2.WordWrap = msoFalse        ' no wrapping
-                shp.TextEffect.Alignment = msoTextEffectAlignmentCentered
-    '    createSlideShapeTextbox sld, 0.75, 0, 6, 0.3, "ModuleTitle", "Mod title", 11
+    Set shp = sld.NotesPage.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, Left:=0, Top:=0, Width:=1, Height:=1)
+    Call updateModuleTitle(sld, shp)
 End If
 If hasLearnerNotes = False Then
-Set shp = sld.NotesPage.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, Left:=0, Top:=0, Width:=1, Height:=1)
-    shp.name = "LearnerNotes"
-                    updateShapePosition shp, 0, 3        ' reposition the shape
-                updateShapeSize shp, 4.75, 6.3        'resize the shape
-                
-                With shp
-                    .TextFrame2.AutoSize = msoAutoSizeTextToFitShape        'autosize the font to fit the text box
-                    .TextFrame2.WordWrap = msoTrue        ' no wrapping for slide number
-                    .TextEffect.FontItalic = msoFalse
-                    .TextEffect.FontBold = msoFalse
-                    .TextEffect.fontSize = 11
-                    .TextFrame.TextRange.Font.name = "+mn-lt"
-                    .TextFrame.TextRange.Font.underline = False
-                    
-                End With
-    '     createSlideShapeTextbox sld, 0, 3, 4.75, 6.25, "LearnerNotes", "Learner notes", 11
+    Set shp = sld.NotesPage.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, Left:=0, Top:=0, Width:=1, Height:=1)
+    Call updateLearnerNotes(sld, shp)
 End If
-
 End Sub
 
-Sub createSlideShapeTextbox(sld As Slide, shpLeftPosition As Long, shpTopPosition As Long, shpWidth As Long, shpHeight As Long, shpName As String, shpText As String, shpFontSize As Integer)
+Function updateObjective(sld As Slide, shp As Shape)
+    Dim name                                      As String: name = "Objective"
+    Dim shpHeight                                 As Double: shpHeight = 0.3 * 72
+    Dim shpWidth                                  As Double: shpWidth = sld.NotesPage.Master.Width * 0.25
+    Dim shpHorizontal                             As Double: shpHorizontal = sld.NotesPage.Master.Width - shpWidth
+    Dim shpVertical                               As Double: shpVertical = sld.NotesPage.Master.Height - (shpHeight * 2)        ' (2) because its above slide number
+    Dim shpFontSize                               As Double: shpFontSize = 10
+    Dim shpWordWrap                               As Integer: shpWordWrap = msoFalse
+    Dim shpUnderline                              As Boolean: shpUnderline = False
+    Dim shpAlign                                  As Integer: shpAlign = msoTextEffectAlignmentRight
+    Dim shpFontBold                               As Integer: shpFontBold = msoFalse
+    Dim shpFontItalic                             As Integer: shpFontItalic = msoTrue
+    Dim shpFontColor                              As Double: shpFontColor = RGB(0, 0, 0)
+    Call updateShape(shp, name, shpHeight, shpWidth, shpHorizontal, shpVertical, shpFontSize, shpWordWrap, shpUnderline, shpAlign, shpFontBold, shpFontItalic, shpFontColor)
+    If shp.TextFrame.HasText = False Then
+        shp.TextFrame.TextRange.Text = "Covering Objective: "
+    End If
+End Function
+
+Function updateSlideNumber(sld As Slide, shp As Shape)
+    Dim name                                      As String: name = "Slide Number Placeholder"
+    Dim shpHeight                                 As Double: shpHeight = 0.3 * 72
+    Dim shpWidth                                  As Double: shpWidth = sld.NotesPage.Master.Width * 0.25
+    Dim shpHorizontal                             As Double: shpHorizontal = sld.NotesPage.Master.Width - shpWidth
+    Dim shpVertical                               As Double: shpVertical = sld.NotesPage.Master.Height - shpHeight        ' (2) because its above slide number
+    Dim shpFontSize                               As Double: shpFontSize = 10
+    Dim shpWordWrap                               As Integer: shpWordWrap = msoFalse
+    Dim shpUnderline                              As Boolean: shpUnderline = False
+    Dim shpAlign                                  As Integer: shpAlign = msoTextEffectAlignmentRight
+    Dim shpFontBold                               As Integer: shpFontBold = msoFalse
+    Dim shpFontItalic                             As Integer: shpFontItalic = msoFalse
+    Dim shpFontColor                              As Double: shpFontColor = RGB(0, 0, 0)
+    Call updateShape(shp, name, shpHeight, shpWidth, shpHorizontal, shpVertical, shpFontSize, shpWordWrap, shpUnderline, shpAlign, shpFontBold, shpFontItalic, shpFontColor)
+End Function
+
+Function updateModuleTitle(sld As Slide, shp As Shape)
+    Dim name                                      As String: name = "ModuleTitle"
+    Dim shpHeight                                 As Double: shpHeight = 0.3 * 72
+    Dim shpWidth                                  As Double: shpWidth = sld.NotesPage.Master.Width
+    Dim shpHorizontal                             As Double: shpHorizontal = 0
+    Dim shpVertical                               As Double: shpVertical = 0
+    Dim shpFontSize                               As Double: shpFontSize = 10
+    Dim shpWordWrap                               As Integer: shpWordWrap = msoFalse
+    Dim shpUnderline                              As Boolean: shpUnderline = False
+    Dim shpAlign                                  As Integer: shpAlign = msoTextEffectAlignmentCentered
+    Dim shpFontBold                               As Integer: shpFontBold = msoFalse
+    Dim shpFontItalic                             As Integer: shpFontItalic = msoFalse
+    Dim shpFontColor                              As Double: shpFontColor = RGB(0, 0, 0)
+    Call updateShape(shp, name, shpHeight, shpWidth, shpHorizontal, shpVertical, shpFontSize, shpWordWrap, shpUnderline, shpAlign, shpFontBold, shpFontItalic, shpFontColor)
+End Function
+
+Function updateMinutes(sld As Slide, shp As Shape)
+    Dim name                                      As String: name = "Minutes"
+    Dim shpHeight                                 As Double: shpHeight = 0.3 * 72
+    Dim shpWidth                                  As Double: shpWidth = sld.NotesPage.Master.Width * 0.75
+    Dim shpHorizontal                             As Double: shpHorizontal = 0
+    Dim shpVertical                               As Double: shpVertical = sld.NotesPage.Master.Height - (shpHeight * 2)
+    Dim shpFontSize                               As Double: shpFontSize = 10
+    Dim shpWordWrap                               As Integer: shpWordWrap = msoFalse
+    Dim shpUnderline                              As Boolean: shpUnderline = False
+    Dim shpAlign                                  As Integer: shpAlign = msoTextEffectAlignmentLeft
+    Dim shpFontBold                               As Integer: shpFontBold = msoFalse
+    Dim shpFontItalic                             As Integer: shpFontItalic = msoFalse
+    Dim shpFontColor                              As Double: shpFontColor = RGB(0, 0, 0)
+    Call updateShape(shp, name, shpHeight, shpWidth, shpHorizontal, shpVertical, shpFontSize, shpWordWrap, shpUnderline, shpAlign, shpFontBold, shpFontItalic, shpFontColor)
+    If shp.TextFrame.HasText = False Then
+        shp.TextFrame.TextRange.Text = "Minutes: "
+    End If
+End Function
+
+Function updateFooter(sld As Slide, shp As Shape)
+    Dim name                                      As String: name = "Footer Placeholder"
+    Dim shpHeight                                 As Double: shpHeight = 0.3 * 72
+    Dim shpWidth                                  As Double: shpWidth = sld.NotesPage.Master.Width * 0.75
+    Dim shpHorizontal                             As Double: shpHorizontal = 0
+    Dim shpVertical                               As Double: shpVertical = sld.NotesPage.Master.Height - shpHeight
+    Dim shpFontSize                               As Double: shpFontSize = 10
+    Dim shpWordWrap                               As Integer: shpWordWrap = msoFalse
+    Dim shpUnderline                              As Boolean: shpUnderline = False
+    Dim shpAlign                                  As Integer: shpAlign = msoTextEffectAlignmentLeft
+    Dim shpFontBold                               As Integer: shpFontBold = msoFalse
+    Dim shpFontItalic                             As Integer: shpFontItalic = msoFalse
+    Dim shpFontColor                              As Double: shpFontColor = RGB(0, 0, 0)
+    Call updateShape(shp, name, shpHeight, shpWidth, shpHorizontal, shpVertical, shpFontSize, shpWordWrap, shpUnderline, shpAlign, shpFontBold, shpFontItalic, shpFontColor)
+End Function
+
+Function updatePresenterNotes(sld As Slide, shp As Shape)
+    Dim name                                      As String: name = "Notes Placeholder"
+    Dim shpHeight                                 As Double: shpHeight = sld.NotesPage.Master.Height - (0.3 * 4 * 72)
+    Dim shpWidth                                  As Double: shpWidth = sld.NotesPage.Master.Width * 0.4
+    Dim shpHorizontal                             As Double: shpHorizontal = sld.NotesPage.Master.Width - sld.NotesPage.Master.Width * 0.4
+    Dim shpVertical                               As Double: shpVertical = 0.3 * 2 * 72
+    Dim shpFontSize                               As Double: shpFontSize = 10
+    Dim shpWordWrap                               As Integer: shpWordWrap = msoTrue
+    Dim shpUnderline                              As Boolean: shpUnderline = False
+    Dim shpAlign                                  As Integer: shpAlign = msoTextEffectAlignmentLeft
+    Dim shpFontBold                               As Integer: shpFontBold = msoFalse
+    Dim shpFontItalic                             As Integer: shpFontItalic = msoFalse
+    Dim shpFontColor                              As Double: shpFontColor = RGB(0, 0, 0)
+    Call updateShape(shp, name, shpHeight, shpWidth, shpHorizontal, shpVertical, shpFontSize, shpWordWrap, shpUnderline, shpAlign, shpFontBold, shpFontItalic, shpFontColor)
+End Function
+
+Function updateLearnerNotes(sld As Slide, shp As Shape)
+    Dim name                                      As String: name = "LearnerNotes"
+    Dim shpHeight                                 As Double: shpHeight = sld.NotesPage.Master.Height - (0.3 * 4 * 72) - (2.45 * 72)
+    Dim shpWidth                                  As Double: shpWidth = sld.NotesPage.Master.Width * 0.6
+    Dim shpHorizontal                             As Double: shpHorizontal = 0
+    Dim shpVertical                               As Double: shpVertical = ((0.3 * 2) + 2.45) * 72
+    Dim shpFontSize                               As Double: shpFontSize = 10
+    Dim shpWordWrap                               As Integer: shpWordWrap = msoTrue
+    Dim shpUnderline                              As Boolean: shpUnderline = False
+    Dim shpAlign                                  As Integer: shpAlign = msoTextEffectAlignmentLeft
+    Dim shpFontBold                               As Integer: shpFontBold = msoFalse
+    Dim shpFontItalic                             As Integer: shpFontItalic = msoFalse
+    Dim shpFontColor                              As Double: shpFontColor = RGB(0, 0, 0)
+    Call updateShape(shp, name, shpHeight, shpWidth, shpHorizontal, shpVertical, shpFontSize, shpWordWrap, shpUnderline, shpAlign, shpFontBold, shpFontItalic, shpFontColor)
+    With shp.TextFrame.TextRange.ParagraphFormat
+        .SpaceAfter = 0
+        .SpaceBefore = 0
+        .SpaceWithin = 1.5
+    End With
+End Function
+
+Function updateSlideImagePlaceholder(sld As Slide, shp As Shape)
+    Dim name                                      As String: name = "Slide Image Placeholder"
+    Dim shpHeight                                 As Double: shpHeight = 2.25 * 72
+    Dim shpWidth                                  As Double: shpWidth = 4 * 72
+    Dim shpHorizontal                             As Double: shpHorizontal = ((sld.NotesPage.Master.Width * 0.6) - shpWidth) / 2
+    Dim shpVertical                               As Double: shpVertical = 0.3 * 2 * 72
     
-    Dim shp                                       As Shape
-    Set shp = sld.NotesPage.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, Left:=shpLeftPosition, Top:=shpTopPosition, Width:=shpWidth, Height:=shpWidth)
     With shp
-        .TextFrame.TextRange.Text = shpText
-        .name = shpName
-        '.TextFrame2.AutoSize = msoAutoSizeTextToFitShape
-        .Height = shpHeight
-        .Width = shpWidth
-        .TextFrame.TextRange.Font.size = shpFontSize
-        .Fill.ForeColor.RGB = RGB(255, 255, 255)
+        .name = name
+        .Width = shpWidth        'shape height
+        .Height = shpHeight        'shape width
+        .Left = shpHorizontal        'shape position from left
+        .Top = shpVertical        'shape position from top
+       ' .ZOrder (msoBringToFront)
     End With
     
-End Sub
+End Function
 
-Sub updateShapeSize(shp As Shape, shpWidth As Double, shpHeight As Double)
+Function updateShape(shp As Shape, name As String, shpHeight As Double, shpWidth As Double, shpHorizontal As Double, shpVertical As Double, shpFontSize As Double, shpWordWrap As Integer, shpUnderline As Boolean, shpAlign As Integer, shpFontBold As Integer, shpFontItalic As Integer, shpFontColor As Double)
     
     With shp
-        .Width = shpWidth * 72
-        .Height = shpHeight * 72
+        .name = name
+        .Width = shpWidth        'shape height
+        .Height = shpHeight        'shape width
+        .Left = shpHorizontal        'shape position from left
+        .Top = shpVertical        'shape position from top
+        With .TextFrame2
+            .AutoSize = msoAutoSizeTextToFitShape        'resize font size to fit if too big
+            .WordWrap = shpWordWrap        'word wrap for textbox
+        End With
+        With .TextFrame.TextRange.Font
+            .size = shpFontSize        'font size
+            .name = "+mn-lt"        'set font to theme
+            .underline = shpUnderline        'remove underline
+            .color.RGB = shpFontColor
+        End With
+        With .TextEffect
+            .Alignment = shpAlign        'text align
+            .FontBold = shpFontBold        'bold text
+            .FontItalic = shpFontItalic        'italic text
+        End With
+        With .Fill
+            .ForeColor.RGB = RGB(255, 255, 255)
+            .BackColor.RGB = RGB(255, 255, 255)
+        End With
     End With
     
-End Sub
-
-Sub updateShapePosition(shp As Shape, shpLeftPosition As Double, shpTopPosition As Double)
-    With shp
-        .Left = shpLeftPosition * 72
-        .Top = shpTopPosition * 72
-    End With
-    
-End Sub
-
-Sub createShape(sld As Slide, shpName As String)
-    
-    Dim shp                                       As Shape
-    Set shp = sld.NotesPage.Shapes.AddTextbox(Orientation:=msoTextOrientationHorizontal, Left:=0, Top:=0, Width:=1 * 72, Height:=1 * 72)
-    shp.name = shpName
-    
-End Sub
-
+End Function
