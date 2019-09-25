@@ -1,6 +1,5 @@
 Option Explicit
 ' TODO check if user cancels dialog window
-TODO
 Sub goToSlide() 
     Dim slide_num As Integer
     Dim total_slides As Integer
