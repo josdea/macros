@@ -1,5 +1,4 @@
 Option Explicit
-'TODO cleanup pasted code
 Sub createGuides()
     statusOutput "**********STARTING GUIDE**********"
     Dim docs                                      As Documents
@@ -63,8 +62,7 @@ Private Function readPowerpointFile() As Object
     Exit Function
     ' Error trap for subroutine's On Error statement above.
 failCleanly:
-    'TODO test what happens when no powerpoint file is chosen
-    MsgBox "PowerPoint quit unexpectedly before we could read its file content. To continue, try re-running the macro. after we discard the New MS-Word file. If this problem persists, try closing Word completely And restarting it before rerunning the macro again. Press OK To continue.", Buttons:=vbExclamation, Title:="PowerPoint Quit Unexpectedly"
+   MsgBox "PowerPoint quit unexpectedly before we could read its file content. To continue, try re-running the macro. after we discard the New MS-Word file. If this problem persists, try closing Word completely And restarting it before rerunning the macro again. Press OK To continue.", Buttons:=vbExclamation, Title:="PowerPoint Quit Unexpectedly"
     With objPPT
         .Activate        ' Activate PowerPoint
         .Quit        ' Exit PowerPoint
@@ -112,7 +110,6 @@ Function createInstructorGuide(docTempTarget As Document)
     strTempImgDir = exportSlideImages(objSrcFile, strExportFormat)        'export slide images
     
     docTempTarget.Activate
-    'With Selection 'TODO is this used
     
     With objSrcFile
         For Each sld In .slides
@@ -172,7 +169,7 @@ Call setTableFormat(tblGuide)
 
 ElseIf (sld.sectionIndex <> .slides(sld.slideNumber + 1).sectionIndex) Then        'not last slide but different than next section
 Call setTableFormat(tblGuide)
-' TODO start here see why the first cell in first table isn't modified as well as all borders
+
 End If        'End of first slide or differing sections IF
 Else        ' there are no sections in current PPT
     If sld.slideNumber = 1 Then        'so look to first slide for title
@@ -183,16 +180,15 @@ Else        ' there are no sections in current PPT
         strModuleTitle = getTitleFromFirstSlide(sld)        'get title shape from the slide if there
         'strModuleTitle = getTitleFromFirstSlide(objSrcFile)        'get title shape from first slide of PPT
         
-        .TypeText (strModuleTitle)        'TODO may use guide type UNUSED, or the module title
+        .TypeText (strModuleTitle)
         
         .Style = docTempTarget.Styles("Heading 1")
         .TypeText (vbCrLf)
         .ClearFormatting
         .MoveEnd Unit:=wdStory        ' Get clear of any content
         .Start = .End
-        'TODO maybe don't need all the end of section logic
-        ' Create and format the target table.
-        Set tblGuide = createTable(docTempTarget)
+        
+        Set tblGuide = createTable(docTempTarget) ' Create and format the target table.
         
         tblGuide.cell(1, 1).Select
         .End = .Start
@@ -209,11 +205,9 @@ End If        'sections exist
 With docTempTarget
     .Activate
     With Selection
-        'If sld.SlideNumber <> 1 Then 'uncomment this out if you aren't using the table row 1 header UNUSED TODO
         .MoveRight Unit:=wdCell, Extend:=wdMove        ' Move right again to create the next line in the table if it isnt the first slide
-        ' End If
-        
         .TypeText ("Slide " & sld.slideNumber & ": ")        ' Add the slide number.
+        
         .Style = "Slide Number"        ' Set the style. TODO check if exists
         .Cells(1).Select        ' Move the cursor to the start of the slide number before importing the image. Otherwise, the anchor will be at the end of the cell contents.
         .End = .Start
@@ -298,7 +292,7 @@ Function getTitleFromFirstSlide(sld As Object) As String                      'l
         If shp.placeholderformat.Type = 2 Or shp.placeholderformat.Type = 3 Or shp.placeholderformat.Type = 1 Then        'is a slide title
         If shp.HasTextFrame Then        ' Check that a text frame exists in the body.
         If shp.TextFrame.HasText Then        ' Check for text in that text frame.
-        getTitleFromFirstSlide = InputBox("Is this the title of this module", "Module Title?", shp.TextFrame.TextRange.Text)        'TODO conver to plaintext
+        getTitleFromFirstSlide = InputBox("Is this the title of this module", "Module Title?", shp.TextFrame.TextRange.Text)        'TODO convert to plaintext
         Exit For
     End If        ' End text in the text frame test.
 End If        ' End Body text frame test.
@@ -475,7 +469,7 @@ Function styleExists(ByVal styleToTest As String, ByVal docToTest As Word.Docume
 End Function
 Sub statusOutput(strMessage As String)
     ' Outputs to debug window, Status Bar, and optionally a message box
-    Debug.Print strMessage        ' TODO toggle display of this.
+    Debug.Print strMessage
     Application.StatusBar = strMessage        ' TODO make sure this outputs to output doc instead of macro doc
     ' MsgBox (strMessage) ' uncomment out this line to also see a message box of the message
     
