@@ -65,8 +65,6 @@ as it will reposition the textboxes if they already exist and are skewed and it
 will create the textboxes if they are missing. This macro pairs with the macros:
 “Create Learner textboxes on Notes” and “Copy Learner box slides to notes”.
 
-[](media/slideboxes.png)
-
 ## Create Learner Textboxes on Notes
 
 This macro will create 3 textboxes on the notes handout page of each slide:
@@ -102,7 +100,7 @@ under Main Tabs, select the Developer check box.
 
 ## Load Add-in
 
-From the developer tab (see above), select “PowerPoint Add-Ins” \> “Add New”.
+From the developer tab (see above), select “PowerPoint Add-Ins” “Add New”.
 Find the add-in that you want to load. If you don’t
 see the “Add-In” toolbar appear at the top then select “Unload” and then “Load”
 to reset the toolbar. This add-in should remain loaded until you completely
