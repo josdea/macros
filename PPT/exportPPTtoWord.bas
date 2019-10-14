@@ -4,10 +4,10 @@ Sub createGuides()
     Dim docs                                      As Documents
     Set docs = Documents        ' all open documents
     Dim docTempTarget                             As Document
-    '  Dim boolUseExistingDoc                        As Boolean: boolUseExistingDoc = False 'default create new document
-    
+ 
+       
     If docs.Count > 0 And docs.Count <= 5 Then        'there are other word documents open, but not too many
-    If (MsgBox("Do you want Select one of the open Word Documents To export to? (otherwise a New file will be generated)", (vbYesNo + vbQuestion), "Use current file?") = vbYes) Then
+    If (MsgBox("Do you want select one of the " & docs.Count & " open Word Documents To export to? (otherwise a New file will be generated)", (vbYesNo + vbQuestion), "Use current file?") = vbYes) Then
         Set docTempTarget = useExistingWordDocument(docs)        'use open document
     Else
         Set docTempTarget = createNewWordDocument()        'create a new document
@@ -19,6 +19,7 @@ End If        'doc count > 1 and less than 6
 Call createStyles(docTempTarget)
 Call createInstructorGuide(docTempTarget)
 Call removeNonBreakingSpaces(docTempTarget)
+Call removeDoubleTabs(docTempTarget)
 Call removeDoubleParagraphs(docTempTarget)
 
 MsgBox ("All Done")
@@ -41,9 +42,39 @@ Function useExistingWordDocument(docs As Documents) As Document
 End If
 End Function
 
+Private Function promptPowerpointFile() As Object
+   Dim objPPT                                    As Object
+    Set objPPT = CreateObject("PowerPoint.Application")
+    Dim oPresentations As Object
+    Set oPresentations = objPPT.presentations
+      Dim pptDoc                                       As Object
+      
+    If oPresentations.Count > 0 And oPresentations.Count <= 5 Then        'there are other ppts  open, but not too many
+    If (MsgBox("Do you want select one of the " & oPresentations.Count & " open PowerPoint files to import from? (otherwise we will open a file from disk)", (vbYesNo + vbQuestion), "Use an open file?") = vbYes) Then
+        
+    For Each pptDoc In oPresentations        ' iterate open PPTs for user to choose where to import from
+        If (MsgBox("Use: " & pptDoc.Name & "?", (vbYesNo + vbQuestion), "Use File?") = vbYes) Then
+        Set promptPowerpointFile = pptDoc
+            statusOutput promptPowerpointFile.Name & " Activated Successfully"
+            Exit For
+        End If
+    Next pptDoc
+    If promptPowerpointFile Is Nothing Then        'the user didnt choose anything so make a new document
+    Set promptPowerpointFile = readPowerpointFile()
+End If
+        
+    Else
+        Set promptPowerpointFile = readPowerpointFile()        'create a new document
+    End If        'use existing doc
+Else
+    Set promptPowerpointFile = readPowerpointFile()        'create a new document if too many open files
+End If        'doc count > 1 and less than 6
+
+End Function
 Private Function readPowerpointFile() As Object
     Dim objPPT                                    As Object
     Set objPPT = CreateObject("PowerPoint.Application")        ' Create and initialize the PowerPoint application object.
+    
     With objPPT
         .Activate        ' Activate the PPT application object.
         .Visible = True        ' Make it visible.
@@ -62,11 +93,14 @@ Private Function readPowerpointFile() As Object
     Exit Function
     ' Error trap for subroutine's On Error statement above.
 failCleanly:
-   MsgBox "PowerPoint quit unexpectedly before we could read its file content. To continue, try re-running the macro. after we discard the New MS-Word file. If this problem persists, try closing Word completely And restarting it before rerunning the macro again. Press OK To continue.", Buttons:=vbExclamation, Title:="PowerPoint Quit Unexpectedly"
+   MsgBox "We had some trouble reading the PowerPoint file. To continue, try re-running the macro. If that still does not work try closing Word completely And restarting it before rerunning the macro again.", Buttons:=vbExclamation, Title:="PowerPoint Had Trouble"
+    End
     With objPPT
         .Activate        ' Activate PowerPoint
         .Quit        ' Exit PowerPoint
     End With
+   
+    
     Exit Function
 End Function
 Function createInstructorGuide(docTempTarget As Document)
@@ -85,13 +119,13 @@ Function createInstructorGuide(docTempTarget As Document)
     Dim objSrcFile                                    As Object        'PPT File
     Dim strModuleTitle                            As String: strModuleTitle = ""
     ' Dim fld                                       As Field
+    Dim intSlideNumber As Integer: intSlideNumber = 0
+    Dim boolSectionNumbering As Boolean: boolSectionNumbering = False
+    Dim strWordForSlide As String: strWordForSlide = "Slide "
+    Dim intModuleNumber As Integer: intModuleNumber = 1
     
     docTempTarget.Activate
-    'Display nav pane
-    With ActiveWindow
-        .View.ShowHeading 2
-        .DocumentMap = True
-    End With
+   
     'PROMPT FOR SPECS
     If (MsgBox("Include presenter notes?", (vbYesNo + vbQuestion), "Instructor Guide?") = vbNo) Then
         boolIncludePresenterNotes = False
@@ -104,23 +138,32 @@ Function createInstructorGuide(docTempTarget As Document)
         strImgAlign = wdShapeLeft
     End If
     dblImgWidth = getImgWidthFromInput()
+   strWordForSlide = InputBox("Desired word or translation of 'Slide'? (leave blank for only slide number)", "Slide Translation?", strWordForSlide) ' TODO check what happens if user cancels
     'END PROMPT FOR SPECS
     
-    Set objSrcFile = readPowerpointFile()        'Open Powerpoint PPT file
+    Set objSrcFile = promptPowerpointFile()        'Open Powerpoint PPT file
     strTempImgDir = exportSlideImages(objSrcFile, strExportFormat)        'export slide images
+    
+    If objSrcFile.SectionProperties.Count > 0 Then ' sections exist prompt for number preference
+    If (MsgBox("Sections Exist. Reset slide numbering for each section?", (vbYesNo + vbQuestion), "Section Numbering?") = vbYes) Then
+        boolSectionNumbering = True
+    End If
+    End If 'sections exist prompt
     
     docTempTarget.Activate
     
     With objSrcFile
         For Each sld In .slides
+        intSlideNumber = intSlideNumber + 1
             If sld.slideShowTransition.Hidden = False Or boolIncludeHiddenSlides = True Then
                 
                 If .SectionProperties.Count > 0 Then        'sections exist
+                                
                 If (sld.slideNumber = 1) Then        'First slide so output section info
                 With Selection        'Begin new table
                     .MoveEnd Unit:=wdStory        ' Get clear of any content
                     .Start = .End        ' move to the end
-                    strModuleTitle = getTitleFromFirstSlide(sld)        'get title shape from the slide if there
+                    strModuleTitle = getTitleFromFirstSlide(sld, intModuleNumber)        'get title shape from the slide if there
                     
                     .TypeText (strModuleTitle)        'Module Title
                     
@@ -147,10 +190,14 @@ Function createInstructorGuide(docTempTarget As Document)
         End If
         
     ElseIf (sld.sectionIndex <> .slides(sld.slideNumber - 1).sectionIndex) Then        'Not the first slide but section index is different than previous slide
+    If boolSectionNumbering = True Then
+    intSlideNumber = 1
+    End If
+    intModuleNumber = intModuleNumber + 1 ' new section so increase module number
     With Selection        'Begin new table
         .MoveEnd Unit:=wdStory        ' Get clear of any content
         .Start = .End        ' move to the end
-        strModuleTitle = getTitleFromFirstSlide(sld)        'get title shape from the slide if there
+        strModuleTitle = getTitleFromFirstSlide(sld, intModuleNumber)       'get title shape from the slide if there
         .TypeText (strModuleTitle)        'module title
         .Style = docTempTarget.Styles("Heading 1")
         .TypeText (vbCrLf)
@@ -177,7 +224,7 @@ Else        ' there are no sections in current PPT
     With Selection        'Begin new table
         .MoveEnd Unit:=wdStory        ' Get clear of any content
         .Start = .End        ' move to the end
-        strModuleTitle = getTitleFromFirstSlide(sld)        'get title shape from the slide if there
+        strModuleTitle = getTitleFromFirstSlide(sld, intModuleNumber)        'get title shape from the slide if there
         'strModuleTitle = getTitleFromFirstSlide(objSrcFile)        'get title shape from first slide of PPT
         
         .TypeText (strModuleTitle)
@@ -206,7 +253,7 @@ With docTempTarget
     .Activate
     With Selection
         .MoveRight Unit:=wdCell, Extend:=wdMove        ' Move right again to create the next line in the table if it isnt the first slide
-        .TypeText ("Slide " & sld.slideNumber & ": ")        ' Add the slide number.
+        .TypeText (strWordForSlide & intSlideNumber & ": ")        ' Add the slide number.
         
         .Style = "Slide Number"        ' Set the style. TODO check if exists
         .Cells(1).Select        ' Move the cursor to the start of the slide number before importing the image. Otherwise, the anchor will be at the end of the cell contents.
@@ -234,13 +281,13 @@ With docTempTarget
                 .TypeText (vbCrLf)
                 .Style = "Slide Text"        'TODO check if style exists
                 .TypeText (shp.TextFrame.TextRange.Text)        ' direct replace instead of copy TODO verify is working and how it handles font changes
-                
+                 ' NOTE: The following line hangs occasionally. Simply press the Debug button on error, then continue running by pressing F5.
+               ' shp.TextFrame.TextRange.Copy    ' Copy the Note text to the clipboard. It'll be pasted into the current Slide Notes cell in a few lines, when we return to the table.
+                '.Paste
                 .Start = .End        'todo make sure works
                 .TypeBackspace        ' todo make sure this works to remove ending paragraph symbol
                 Exit For
-                ' NOTE: The following line hangs occasionally. Simply press the Debug button on error, then continue running by pressing F5.
-                'shp.TextFrame.TextRange.Copy    ' Copy the Note text to the clipboard. It'll be pasted into the current Slide Notes cell in a few lines, when we return to the table.
-                '.Paste
+               
                 ' TODO multiple file support
             End If        ' End text in the text frame test.
         End If        ' End Body text frame test.
@@ -258,11 +305,13 @@ Next sld
 
 End With        'objSrcFile
 
-'docTempTarget.Activate        '    Reactivatite the temp target file. TODO still work
-
 Call setTableFormat(tblGuide)        'TODO move backt o main at top maybe or
 
-'End With
+ 'Display nav pane
+    With ActiveWindow
+        .View.ShowHeading 2
+        .DocumentMap = True
+    End With
 
 End Function
 
@@ -285,7 +334,7 @@ Loop While getImgWidthFromInput <= 0.5 Or getImgWidthFromInput > 8
 
 End Function
 
-Function getTitleFromFirstSlide(sld As Object) As String                      'looks at first slide of PPT file and return title text if there
+Function getTitleFromFirstSlide(sld As Object, intModuleNumber As Integer) As String                      'looks at first slide of PPT file and return title text if there
     Dim shp                                       As Object
     For Each shp In sld.Shapes
         If shp.Type = 14 Then        'shape is a placeholder
@@ -301,7 +350,7 @@ End If        'is a placeholder
 Next shp
 
 If getTitleFromFirstSlide = "" Then        'if there was no title placeholder on the first slide
-getTitleFromFirstSlide = "Module ? (no title placeholder found On slide 1)"
+getTitleFromFirstSlide = "Module " & intModuleNumber
 End If
 
 End Function
@@ -416,6 +465,24 @@ Function removeDoubleParagraphs(docTempTarget As Document)            'removes d
     End With
 End Function
 
+Function removeDoubleTabs(docTempTarget As Document)            'removes double paragraphs together
+    docTempTarget.Activate
+    
+    With Selection.Find
+        .Text = "^t{2,}"
+        .Replacement.Text = "^t"
+        .Forward = True
+        .Wrap = wdFindContinue
+        .Format = False
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchAllWordForms = False
+        .MatchSoundsLike = False
+        .MatchWildcards = True
+        .Execute Replace:=wdReplaceAll
+    End With
+End Function
+
 Sub createStyles(docTempTarget)        ' Create the custom styles in the target document.
     
     With docTempTarget.Styles        ' Access the Styles gallery.
@@ -496,3 +563,4 @@ Function goEnd(docTempTarget As Document)
         .Start = .End
     End With
 End Function
+
