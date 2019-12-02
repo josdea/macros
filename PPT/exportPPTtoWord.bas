@@ -50,7 +50,7 @@ Private Function promptPowerpointFile() As Object
       Dim pptDoc                                       As Object
       
     If oPresentations.Count > 0 And oPresentations.Count <= 5 Then        'there are other ppts  open, but not too many
-    If (MsgBox("Do you want select one of the " & oPresentations.Count & " open PowerPoint files to import from? (otherwise we will open a file from disk)", (vbYesNo + vbQuestion), "Use an open file?") = vbYes) Then
+    If (MsgBox("Do you want to select one of the " & oPresentations.Count & " open PowerPoint files to import from? (otherwise we will open a file from disk)", (vbYesNo + vbQuestion), "Use an open file?") = vbYes) Then
         
     For Each pptDoc In oPresentations        ' iterate open PPTs for user to choose where to import from
         If (MsgBox("Use: " & pptDoc.Name & "?", (vbYesNo + vbQuestion), "Use File?") = vbYes) Then
@@ -83,7 +83,7 @@ Private Function readPowerpointFile() As Object
         Set dlgOpen = .FileDialog(Type:=msoFileDialogOpen)
         With dlgOpen
             .Title = "Select an Input Course File"
-            .InitialFileName = Environ("USERPROFILE") & "\Desktop\"        ' Set the default directory path.
+            .InitialFileName = Environ("USERPROFILE") & "\Downloads\"        ' Set the default directory path.
             .Show
             .Execute
         End With
@@ -118,7 +118,6 @@ Function createInstructorGuide(docTempTarget As Document)
     Dim strImgAlign                               As String: strImgAlign = wdShapeRight
     Dim objSrcFile                                    As Object        'PPT File
     Dim strModuleTitle                            As String: strModuleTitle = ""
-    ' Dim fld                                       As Field
     Dim intSlideNumber As Integer: intSlideNumber = 0
     Dim boolSectionNumbering As Boolean: boolSectionNumbering = False
     Dim strWordForSlide As String: strWordForSlide = "Slide "
@@ -315,6 +314,7 @@ Call setTableFormat(tblGuide)        'TODO move backt o main at top maybe or
 
 End Function
 
+
 Option Explicit
 
 Function getImgWidthFromInput() As Double
@@ -341,7 +341,7 @@ Function getTitleFromFirstSlide(sld As Object, intModuleNumber As Integer) As St
         If shp.placeholderformat.Type = 2 Or shp.placeholderformat.Type = 3 Or shp.placeholderformat.Type = 1 Then        'is a slide title
         If shp.HasTextFrame Then        ' Check that a text frame exists in the body.
         If shp.TextFrame.HasText Then        ' Check for text in that text frame.
-        getTitleFromFirstSlide = InputBox("Is this the title of this module", "Module Title?", shp.TextFrame.TextRange.Text)        'TODO convert to plaintext
+        getTitleFromFirstSlide = InputBox("Is this the title of this module", "Module Title?", shp.TextFrame.TextRange.Text)
         Exit For
     End If        ' End text in the text frame test.
 End If        ' End Body text frame test.
@@ -350,7 +350,8 @@ End If        'is a placeholder
 Next shp
 
 If getTitleFromFirstSlide = "" Then        'if there was no title placeholder on the first slide
-getTitleFromFirstSlide = "Module " & intModuleNumber
+getTitleFromFirstSlide = InputBox("Title shape not found. What should the module title be?", "Module Title?", "Module " & intModuleNumber)
+
 End If
 
 End Function
@@ -563,4 +564,3 @@ Function goEnd(docTempTarget As Document)
         .Start = .End
     End With
 End Function
-
