@@ -1,7 +1,25 @@
 
+createSlide(strTopicTitle As String, strObjective As String, strSlideText As String, strPGNotes As String, strIGNotes As String, strHasExercise As String, strExerciseTitle As String, strExerciseDescription As String, strMediaRequired As String, strMediaDetails As String)
+strModule, strSubtitle, strDescription, strInstructor, strModuleDuration, 
 Dim sld as Slide
-
-
+trModule 
+As String, strSubtitle 
+As String, strDescription 
+As String, strInstructor 
+As String, strModuleDuration 
+As String, strTopicTitle 
+As String, strObjective 
+As String, strSlideText 
+As String, strPGNotes 
+As String, strIGNotes 
+As String, strHasExercise 
+As String, strExerciseTitle 
+As String, strExerciseDescription 
+As String, strMediaRequired 
+As String, strMediaDetails 
+As String, oPresentation 
+As Object)
+vbCrLf
 ActivePresentation.Slides.Add Index:=ActivePresentation.Slides.Count + 1, Layout:=ppLayoutBlank
    
  ActivePresentation.Slides.Add Index:=ActivePresentation.Slides.Count + 1, Layout:=ppLayoutChart
