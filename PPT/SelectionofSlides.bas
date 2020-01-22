@@ -1,0 +1,1 @@
+' currentpresentation.application.activewindow.selection.sliderange(1).slideindex

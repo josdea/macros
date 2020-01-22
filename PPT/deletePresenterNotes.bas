@@ -5,9 +5,7 @@ Sub removeAllPresenterNotes()
  
   For Each currentSlide In ActivePresentation.Slides
 
-if currentSlide.NotesPage.Shapes.Placeholders(2)
-    currentSlide.NotesPage.Shapes.Placeholders(2).TextFrame.TextRange _
-    = ""
+if currentSlide.NotesPage.Shapes.Placeholders(2).TextFrame.TextRange = "" then
   Next currentSlide
 
 else

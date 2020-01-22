@@ -6,7 +6,7 @@ Public Sub Create_PPT_From_CSV()
     Call LoopCells(oPresentation)
     oPresentation.slides(1).Select
     Set oPresentation = Nothing
-    MsgBox ("All Done")
+    'MsgBox ("All Done")
 End Sub
 
 Private Function LoopCells(oPresentation As Object)
@@ -21,6 +21,7 @@ Private Function LoopCells(oPresentation As Object)
     Dim strCourseTitle As String
     Dim strClient As String
     Dim strCourseDuration As String
+    Dim strCourseObjectives As String
     
     Dim strModule As String
     Dim strSubtitle As String
@@ -36,36 +37,50 @@ Private Function LoopCells(oPresentation As Object)
     Dim strExerciseTitle As String
     Dim strExerciseDescription As String
     Dim strMediaRequired As String
+    Dim strModuleObjectives As String
     Dim strMediaDetails As String
+    Dim strFileName As String
+    Dim strListedTopics As String
+    
+    Dim intFirstRowOfData As Integer
+    intFirstRowOfData = 8        ' update this number if more course details are added later
     Dim intPreviousRow As Integer
-    intPreviousRow = 7
+    intPreviousRow = intFirstRowOfData        'set to first row of data
     Dim strModulePrevious
     Dim intModuleNumber As Integer
     intModuleNumber = 1
     
-    Set myRange = ActiveSheet.usedRange
-    For Each c In myRange
+    Set myRange = ActiveSheet.usedRange 'range with data in int
+    For Each c In myRange 'each cell
         
         ' c.Select
-        cellValue = c.Value
-        cellAddress = c.Address
-        cellColumn = c.Column
-        cellRow = c.Row
+        cellValue = c.Value 'value of cell
+        cellAddress = c.Address 'address
+        cellColumn = c.Column 'column number
+        cellRow = c.Row 'row number
         
         If cellColumn = 2 And cellRow = 1 Then        ' course title
         strCourseTitle = cleanupString(cellValue)
+        oPresentation.BuiltinDocumentProperties(1).Value = strCourseTitle
     End If        'end if course title
     If cellColumn = 2 And cellRow = 2 Then        'course client
     strClient = cleanupString(cellValue)
-    Call createTitleSlide(strCourseTitle, strClient, "", "", "", oPresentation)
+    Call createSlide2(oPresentation, 1, strCourseTitle, strClient, , , , , strCourseTitle) 'title slide for course title
+    
 End If        ' end if course client
 
-If cellRow > 6 Then        ' get content
+If cellColumn = 2 And cellRow = 4 Then        ' course objectives
+strCourseObjectives = cleanupString(cellValue)
+Call createObjectivesSlide(2, "Course Objectives", strCourseObjectives, oPresentation)
+
+End If
+
+If cellRow >= intFirstRowOfData Then        ' get content
 Select Case cellColumn
     Case 1
         strModule = cleanupString(cellValue)
         If intPreviousRow <> cellRow Then        'a new row and not the first so create slide from assembled stuff
-        Call createSlide(strModule, strSubtitle, strDescription, strInstructor, strModuleDuration, strTopicTitle, strObjective, strSlideText, strPGNotes, strIGNotes, strHasExercise, strExerciseTitle, strExerciseDescription, strMediaRequired, strMediaDetails, oPresentation)
+        Call regularSlide(strModule, strSubtitle, strDescription, strInstructor, strModuleDuration, strTopicTitle, strObjective, strSlideText, strPGNotes, strIGNotes, strHasExercise, strExerciseTitle, strExerciseDescription, strMediaRequired, strMediaDetails, strFileName, oPresentation)
         intPreviousRow = cellRow
     End If
 Case 2
@@ -76,13 +91,10 @@ Case 4
     strInstructor = cleanupString(cellValue)
 Case 5
     strModuleDuration = cleanupString(cellValue)
-    If StrComp(strModulePrevious, cleanupString(strModule)) <> 0 Then        'module title is different or first so create section
-    Call createSectionTitleSlide("Module " & intModuleNumber & ": " & strModule, strSubtitle, strDescription, strInstructor, strModuleDuration, oPresentation)
-    intModuleNumber = intModuleNumber + 1
-    strModulePrevious = cleanupString(strModule)
-End If
+    
 Case 6
     strTopicTitle = cleanupString(cellValue)
+    strListedTopics = strListedTopics & strTopicTitle & ", "
 Case 7
     strObjective = cleanupString(cellValue)
 Case 8
@@ -101,35 +113,67 @@ Case 14
     strMediaRequired = cleanupString(cellValue)
 Case 15
     strMediaDetails = cleanupString(cellValue)
+Case 16
+    
+    If StrComp(strModulePrevious, strModule) <> 0 Then        'module title is different or first so create review slide, section and title slide
+    Call createSlide2(oPresentation, 33, "Review", "Questions?", "Module Objectives: " & vbCrLf & strModuleObjectives & _
+    vbCrLf & "Topics Covered: " & vbCrLf & strListedTopics) 'creating review slide
+    strListedTopics = ""
+    
+    strModuleObjectives = cleanupString(cellValue) 'Set module obectives after creating review slide above
+    
+    Call createSlide2(oPresentation, 33, "Module " & intModuleNumber & ": " & strModule, strSubtitle, "Module Description: " & _
+    strDescription & vbCrLf & "Module Duration: " & strModuleDuration & " Minutes" & vbCrLf & "Module Objectives: " & vbCrLf & _
+    strModuleObjectives, , , , "Module " & intModuleNumber & ": " & strModule) ' create section and title slide TODO if next module title includes previous reivew then it would happen here
+    
+    intModuleNumber = intModuleNumber + 1
+    strModulePrevious = cleanupString(strModule)
+    
+End If
+
+Case 17
+    strFileName = cellValue
 End Select
-End If        'end if cellrow > 6
+End If        'end if cellrow > intfirstrowof data
 Next c
 
 End Function
-Private Function createSlide(strModule As String, strSubtitle As String, strDescription As String, strInstructor As String, strModuleDuration As String, strTopicTitle As String, strObjective As String, strSlideText As String, strPGNotes As String, strIGNotes As String, strHasExercise As String, strExerciseTitle As String, strExerciseDescription As String, strMediaRequired As String, strMediaDetails As String, oPresentation As Object)
+
+Private Function createObjectivesSlide(intLayout As Integer, strSlideTitle As String, strSlideText As String, oPresentation As Object)
+    Dim sld    As Object
+    
+    Set sld = createSlide2(oPresentation, 2, "Course Objectives", strSlideText)
+    
+    sld.Shapes(2).TextFrame.TextRange.ParagraphFormat.Bullet.Type = 2        'sets to numbered list
+End Function
+Private Function regularSlide(strModule As String, strSubtitle As String, strDescription As String, strInstructor As String, strModuleDuration As String, strTopicTitle As String, strObjective As String, strSlideText As String, strPGNotes As String, strIGNotes As String, strHasExercise As String, strExerciseTitle As String, strExerciseDescription As String, strMediaRequired As String, strMediaDetails As String, strFileName As String, oPresentation As Object)
     Dim sld    As Object
     Dim strPresenterNotes As String
+    Dim shpInserted As Object
+    Dim strNotes As String
+    strNotes = "Objective: " & strObjective & vbCrLf & _
+        "##" & vbCrLf & "Presenter Notes: " & strIGNotes & vbCrLf & "##" & vbCrLf & _
+        "Participant Notes: " & vbCrLf & strPGNotes & vbCrLf
     
     If StrComp(strMediaRequired, "") <> 0 Then        'some form of graphic so create different layout
-    Set sld = oPresentation.slides.Add(oPresentation.slides.Count + 1, 29)
-    sld.Comments.Add 12, 12, "TODO", "jmd", strMediaRequired & ": " & strMediaDetails
+    Set sld = createSlide2(oPresentation, 29, strTopicTitle, strSlideText, strNotes, "TODO", "jmd", strMediaRequired & ": " & strMediaDetails)
+     
+     If strFileName <> "" Then 'there is a file
+     Set shpInserted = addImage(strFileName, sld)
+     End If
+     
 Else
-    Set sld = oPresentation.slides.Add(oPresentation.slides.Count + 1, 2)
+    Set sld = createSlide2(oPresentation, 2, strTopicTitle, strSlideText, strNotes)
+   
 End If
-sld.Select
-
-sld.Shapes(1).TextFrame2.TextRange.Text = strTopicTitle
-sld.Shapes(2).TextFrame2.TextRange.Text = strSlideText
-sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Objective: " & strObjective & vbCrLf & vbCrLf & "Participant Notes: " & strPGNotes & vbCrLf & "##" & vbCrLf & "Presenter Notes: " & strIGNotes & vbCrLf & "##"
 
 If StrComp(strHasExercise, "True") = 0 Then        'there is an exercise so create a placeholder slide
-Set sld = oPresentation.slides.Add(oPresentation.slides.Count + 1, 33)
-'sld.Select
-sld.Shapes(1).TextFrame2.TextRange.Text = strExerciseTitle
-sld.Shapes(2).TextFrame2.TextRange.Text = "Exercise"
-sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "##" & vbCrLf & "Exercise Description: " & strExerciseDescription & vbCrLf & "##"
+'Set sld = createSlide2(oPresentation, 33, strExerciseTitle, "Exercise", "Objective: " & strObjective & vbCrLf & "##" & vbCrLf & "Exercise Description: " & strExerciseDescription & vbCrLf & "##")
+
+Set sld = createSlide2(oPresentation, 35, strExerciseTitle, strExerciseDescription, "Objective: " & _
+strObjective)
+sld.Shapes(3).TextFrame2.TextRange.Text = "Exercise"
 End If
-'oPresentation.SectionProperties.AddBeforeSlide sld.slideindex, strModule
 
 End Function
 
@@ -137,52 +181,78 @@ Private Function cleanupString(strText As String) As String
     strText = Replace(strText, "%0A", vbCrLf)
     strText = Replace(strText, "%2C", ",")
     strText = Replace(strText, "%2F", "/")
-    
     cleanupString = strText
     
 End Function
 
-Private Function createTitleSlide(strModule As String, strSubtitle As String, strDescription As String, strInstructor As String, strModuleDuration As String, oPresentation As Object)
+Function createSlide2(oPresentation As Object, Optional intLayout As Integer = 2, Optional strSlideTitle As String = "", Optional strSlideText As String = "", _
+         Optional strPresenterNotes As String = "", Optional strCommentTitle As String = "", Optional strCommentInitials As String = "", _
+         Optional strCommentText As String = "", Optional strSectionTitle As String) As Object
+    
     Dim sld    As Object
     
-    Set sld = oPresentation.slides.Add(oPresentation.slides.Count + 1, 1)
+    Set sld = oPresentation.slides.Add(oPresentation.slides.Count + 1, intLayout)
     sld.Select
-    sld.Shapes(1).TextFrame2.TextRange.Text = strModule
-    sld.Shapes(2).TextFrame2.TextRange.Text = strSubtitle
-    oPresentation.SectionProperties.AddBeforeSlide sld.slideindex, strModule
     
-End Function
+    If strCommentText <> "" Then        'create comment
+    sld.Comments.Add 12, 12, strCommentTitle, strCommentInitials, strCommentText
+End If
 
-Private Function createSectionTitleSlide(strModule As String, strSubtitle As String, strDescription As String, strInstructor As String, strModuleDuration As String, oPresentation As Object)
-    Dim sld    As Object
-    'strDescription = cleanupString(strDescription)
-    'strModule = cleanupString(strModule)
-    'strSubtitle = cleanupString(strSubtitle)
-    
-    Set sld = oPresentation.slides.Add(oPresentation.slides.Count + 1, 1)
-    sld.Shapes(1).TextFrame2.TextRange.Text = strModule
-    sld.Shapes(2).TextFrame2.TextRange.Text = strSubtitle
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Module Description: " & strDescription & vbCrLf & strModuleDuration & " Minutes" & vbCrLf
-    oPresentation.SectionProperties.AddBeforeSlide sld.slideindex, strModule
-    
+If sld.Shapes.Count > 0 And strSlideTitle <> "" Then        'hopefully title
+sld.Shapes(1).TextFrame2.TextRange.Text = strSlideTitle
+End If
+
+If sld.Shapes.Count > 1 And strSlideText <> "" Then        'hopefully title
+sld.Shapes(2).TextFrame2.TextRange.Text = strSlideText
+End If
+
+If strSectionTitle <> "" Then        ' create section
+oPresentation.SectionProperties.AddBeforeSlide sld.slideindex, strSectionTitle
+End If
+
+If strPresenterNotes <> "" Then        'create notes
+sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = strPresenterNotes
+End If
+
+Set createSlide2 = sld        'return this created slide in case
+
 End Function
 
 Private Function createNewPPT() As Object
     
-    'Step 1: Declare your variables
     Dim objPPT As Object
     Dim oPresentation As Object
     Dim sld    As Object
     Dim SlideTitle As String
-    'Step 2: Open PowerPoint and create new presentation
     Set objPPT = CreateObject("PowerPoint.Application")
     Set oPresentation = objPPT.Presentations.Add
+    'slideheight 540 slidewidth 960 default (slidesize: 7 ppSlideSizeCustom) but changed to 4:3 the width is now 720 SlideSize: ppSlideSizeOnScreen (1)
+    'With oPresentation.PageSetup
+    If (MsgBox("Use 4:3 ratio? Otherwise it will be 16:9?", (vbYesNo + vbQuestion), "Slide Size?") = vbYes) Then
+        oPresentation.PageSetup.SlideSize = 1
+    End If
+    
+    'End With
     objPPT.Visible = True
     Set createNewPPT = oPresentation
-    'Step 7: Memory Cleanup
     objPPT.Activate
-    ' Set sld = Nothing
-    ' Set oPresentation = Nothing
-    ' Set objPPT = Nothing
+    Debug.Print "here: "; oPresentation.PageSetup.SlideSize
     
+End Function
+
+Private Function addImage(strFileName As String, sld As Object) As Object
+Dim strPath As String
+Dim shpInserted As Object
+
+  strPath = ActiveWorkbook.Path & "\" & strFileName
+  'strPath = Environ("USERPROFILE") & "\Downloads\" & strFileName
+  Debug.Print strPath
+  On Error GoTo Errorhandler
+    Set shpInserted = sld.Shapes.AddPicture(Filename:=strPath, LinkToFile:=False, SaveWithDocument:=msoTrue, Left:=0, Top:=0)
+    
+    Exit Function
+Errorhandler:
+    sld.Comments.Add 12, 12, "TODO", "jmd", "File Not Found, Image not added: " & strFileName
+    Resume Next
+
 End Function
