@@ -29,12 +29,13 @@ Sub Video_Convert_Embedded_To_Linked()
                     End If
                 End If
             End If
-        Next        ' Shape
-    Next        ' Slide
+        Next                                      ' Shape
+    Next                                          ' Slide
+    MsgBox "All Done"
 End Sub
 
 Sub Video_Convert_Linked_To_Embedded()
-    MsgBox "This can take a few minutes,        't worry"
+    MsgBox "This can take a few minutes,        't worry. Select ok to continue"
     Dim shp    As Shape
     Dim sld    As Slide
     For Each sld In ActivePresentation.Slides
@@ -47,24 +48,23 @@ Sub Video_Convert_Linked_To_Embedded()
     MsgBox "All Done"
 End Sub
 
-Sub Text_Language_Toggle_US_UK()
-    Dim currentSlide As Integer        'current slide number
-    Dim currentShape As Integer        ' current shape on current slide or notes
+Sub Text_Language_Toggle_US_UK()                  ' checked 1/17/20
+    Dim currentSlide As Integer                   'current slide number
+    Dim currentShape As Integer                   ' current shape on current slide or notes
     Dim slideCount As Integer
-    Dim shapeCount As Integer        'Find out how many slides there are in the presentation
+    Dim shapeCount As Integer                     'Find out how many slides there are in the presentation
     Dim noteShape As Shape
     Dim currentLanguage As Integer
     Dim totalShapeCount As Integer
     totalShapeCount = 0
     If MsgBox("Do you want UK English Spelling For Slides And notes? Otherwise US English will be applied", vbYesNo) = vbYes Then
-        currentLanguage = msoLanguageIDEnglishUK        'language set to UK
+        currentLanguage = msoLanguageIDEnglishUK  'language set to UK
     Else
-        currentLanguage = msoLanguageIDEnglishUS        'language set to US
+        currentLanguage = msoLanguageIDEnglishUS  'language set to US
     End If
-    slideCount = ActivePresentation.Slides.count        'Get slide count
-    MsgBox ("There are " & slideCount & " slides")
-    For currentSlide = 1 To slideCount        'Find out how many shapes there are so identify all the text boxes
-        shapeCount = ActivePresentation.Slides(currentSlide).Shapes.count        'Loop through all the shapes on that slide changing the language option
+    slideCount = ActivePresentation.Slides.count  'Get slide count
+    For currentSlide = 1 To slideCount            'Find out how many shapes there are so identify all the text boxes
+        shapeCount = ActivePresentation.Slides(currentSlide).Shapes.count 'Loop through all the shapes on that slide changing the language option
         For currentShape = 1 To shapeCount
             If ActivePresentation.Slides(currentSlide).Shapes(currentShape).HasTextFrame Then
                 ActivePresentation.Slides(currentSlide).Shapes(currentShape) _
@@ -82,10 +82,10 @@ Sub Text_Language_Toggle_US_UK()
             Next noteShape
         End If
     Next currentSlide
-    MsgBox ("All Done. Total Shapes Set: " & totalShapeCount)
+    MsgBox ("All Done. Total Shapes Set: " & totalShapeCount & ". Press F7 To rerun spellcheck.")
 End Sub
 
-Sub Sections_Bulk_Create()
+Sub Sections_Bulk_Create()                        ' checked 1/17/20
     Dim sectionsDesired As Integer
     Dim sectionPrefix As String
     Dim sectioSuffix As String
@@ -146,23 +146,23 @@ Private Function EnumerateFiles(ByVal sDirectory As String, _
         sTemp = Dir$
     Loop
 End Function
-Sub Shapes_Count_By_Name()
+Sub Shapes_Count_By_Name()                        ' checked 1/17/20
     Dim sld    As Slide
     Dim shp    As Shape
     Dim shapeNameToCount As String
     Dim shapesCounted As Integer
-    shapeNameToCount = InputBox("What Is the shape name To count On all slides (case sensitive?")
-    For Each sld In ActivePresentation.Slides        ' iterate slides
+    shapeNameToCount = InputBox("What Is the shape name To count On all slides (case sensitive And notes Not counted")
+    For Each sld In ActivePresentation.Slides     ' iterate slides
         For Each shp In sld.Shapes
             If shp.Name = shapeNameToCount Then
                 shapesCounted = shapesCounted + 1
             End If
         Next shp
-    Next sld        ' end of iterate slides
+    Next sld                                      ' end of iterate slides
     MsgBox shapesCounted & " shapes match the name: " & shapeNameToCount
 End Sub
 
-Sub Presenter_Notes_Remove_All()
+Sub Presenter_Notes_Remove_All()                  ' checked 1/17/20
     Dim oSl    As Slide
     Dim oSh    As Shape
     If MsgBox("Are you sure you want To delete all presenter/instructor notes?", (vbYesNo + vbQuestion), "Delete all Notes?") = vbYes Then
@@ -182,43 +182,24 @@ Sub Presenter_Notes_Remove_All()
     End If
 End Sub
 
-Sub Shapes_Delete_By_Name()
+Sub Shapes_Delete_By_Name()                       ' checked 1/17/20
     Dim sld    As Slide
     Dim shp    As Shape
     Dim shapeNameToDelete As String
     Dim shapesDeleted As Integer
     shapeNameToDelete = InputBox("What Is the shape name To delete On all slides?")
-    For Each sld In ActivePresentation.Slides        ' iterate slides
+    For Each sld In ActivePresentation.Slides     ' iterate slides
         For Each shp In sld.Shapes
             If shp.Name = shapeNameToDelete Then
                 shapesDeleted = shapesDeleted + 1
                 shp.Delete
             End If
         Next shp
-    Next sld        ' end of iterate slides
+    Next sld                                      ' end of iterate slides
     MsgBox shapesDeleted & " shapes have been deleted"
 End Sub
 
-Sub Comments_Export_To_Disk()
-    Dim n      As Integer
-    Dim sld    As Slide
-    Dim myComment As Comment
-    Dim Comment As String
-    For Each sld In ActivePresentation.Slides
-        For Each myComment In sld.Comments
-            Comment = Comment & vbCrLf
-            Comment = Comment & "Slide " & sld.SlideNumber & " of " & ActivePresentation.Slides.count & " (" & myComment.DateTime & ")" & vbCrLf
-            Comment = Comment & "" & myComment.Text & vbCrLf
-        Next myComment
-    Next sld
-    n = FreeFile()
-    Open Environ("USERPROFILE") & "\Desktop\ppt_comments_" & Format(Now(), "yymmddhhmm") & ".txt" For Output As #n
-    Print #n, Comment        ' write to file
-    Close #n
-    MsgBox "All Comments have been written To a Text file (ppt_comments) On your desktop"
-End Sub
-
-Sub Comments_Search_And_Export()
+Sub Comments_Search_And_Export()                  ' checked 1/17/20
     Dim replyCount As Integer
     Dim commentCount As Integer
     Dim sld    As Slide
@@ -238,67 +219,67 @@ Sub Comments_Search_And_Export()
                 For replyIndex = 1 To myComment.Replies.count
                     tempComment = tempComment & "    \-" & myComment.Replies(replyIndex).Text & " (" & myComment.Replies(replyIndex).DateTime & ")" & vbCrLf
                     replyCount = replyCount + 1
-                Next        'next reply
-            End If        'there are replies
+                Next                              'next reply
+            End If                                'there are replies
             If (InStr(UCase(tempComment), UCase(commentSearch))) Or commentSearch = "" Then
                 Comment = Comment & tempComment
                 Comment = Comment & vbCrLf
                 commentCount = commentCount + 1 + replyCount
-            End If        'search matches or is blank
+            End If                                'search matches or is blank
         Next myComment
     Next sld
     Dim n      As Integer
     n = FreeFile()
     Open Environ("USERPROFILE") & "\Desktop\ppt_comments_" & Format(Now(), "yymmdd hhmm") & "-" & commentSearch & ".txt" For Output As #n
-    Print #n, Comment        ' write to file
+    Print #n, Comment                             ' write to file
     Close #n
     MsgBox commentCount & " comments and/or replies have been written To a Text file (ppt_comments) On your desktop"
 End Sub
 
-Sub Image_Go_To_Next()
+Sub Image_Go_To_Next()                            ' checked 1/17/20
     Dim sld                                       As Slide
     Dim shp                                       As Shape
     Dim currentSlideNumber                        As Integer
     Dim startingSlideNumber                       As Integer
     startingSlideNumber = Application.ActiveWindow.View.Slide.SlideNumber + 1
-    For currentSlideNumber = startingSlideNumber To ActivePresentation.Slides.count        ' iterate slides
+    For currentSlideNumber = startingSlideNumber To ActivePresentation.Slides.count ' iterate slides
         Set sld = Application.ActivePresentation.Slides(currentSlideNumber)
         For Each shp In sld.Shapes
-            If shp.Type = msoPicture Then
-                sld.Select        'select current slide
+            If shp.Type = msoPicture Or shp.PlaceholderFormat.ContainedType = msoPicture Then
+                sld.Select                        'select current slide
                 shp.Select
-                MsgBox "Image found On slide " & currentSlideNumber & " Shape: " & shp.Name & ". Move To the Next slide And run again To continue searching"        ' outputs slide number and shape name
-                If Not CommandBars.GetPressedMso("SelectionPane") Then CommandBars.ExecuteMso ("SelectionPane")        ' show selection pane
-                Exit Sub        ' end program for user to do things
-            End If        ' end of if type is msomedia
-        Next shp        ' end of iterate shapes
-    Next        ' end of iterate slides
+                MsgBox "Image found On slide " & currentSlideNumber & " Shape: " & shp.Name & ". Move To the Next slide And run again To continue searching" ' outputs slide number and shape name
+                If Not CommandBars.GetPressedMso("SelectionPane") Then CommandBars.ExecuteMso ("SelectionPane") ' show selection pane
+                Exit Sub                          ' end program for user to do things
+            End If                                ' end of if type is msomedia
+        Next shp                                  ' end of iterate shapes
+    Next                                          ' end of iterate slides
     MsgBox "No More Images Found. Move To slide 1 To search again."
 End Sub
 
-Sub Video_Go_To_Next()
+Sub Video_Go_To_Next()                            ' checked 1/17/20
     Dim sld                                       As Slide
     Dim shp                                       As Shape
     Dim currentSlideNumber                        As Integer
     Dim startingSlideNumber                       As Integer
     startingSlideNumber = Application.ActiveWindow.View.Slide.SlideNumber
-    For currentSlideNumber = startingSlideNumber To ActivePresentation.Slides.count        ' iterate slides
+    For currentSlideNumber = startingSlideNumber To ActivePresentation.Slides.count ' iterate slides
         Set sld = Application.ActivePresentation.Slides(currentSlideNumber)
         For Each shp In sld.Shapes
             If shp.Type = msoMedia Then
                 If shp.MediaType = ppMediaTypeMovie Then
-                    sld.Select        'select current slide
-                    MsgBox "Video found On slide " & currentSlideNumber & " Shape: " & shp.Name & ". Move To the Next slide And run again To continue searching"        ' outputs slide number and shape name
-                    If Not CommandBars.GetPressedMso("SelectionPane") Then CommandBars.ExecuteMso ("SelectionPane")        ' show selection pane
-                    Exit Sub        ' end program for user to do things
+                    sld.Select                    'select current slide
+                    MsgBox "Video found On slide " & currentSlideNumber & " Shape: " & shp.Name & ". Move To the Next slide And run again To continue searching" ' outputs slide number and shape name
+                    If Not CommandBars.GetPressedMso("SelectionPane") Then CommandBars.ExecuteMso ("SelectionPane") ' show selection pane
+                    Exit Sub                      ' end program for user to do things
                 End If
-            End If        ' end of if type is msomedia
-        Next shp        ' end of iterate shapes
-    Next        ' end of iterate slides
+            End If                                ' end of if type is msomedia
+        Next shp                                  ' end of iterate shapes
+    Next                                          ' end of iterate slides
     MsgBox "No More Videos Found. Move To slide 1 To search again."
 End Sub
 
-Sub Slide_Go_To()
+Sub Slide_Go_To()                                 ' checked 1/17/20
     Dim slide_num As Integer
     Dim total_slides As Integer
     total_slides = ActivePresentation.Slides.count
@@ -310,60 +291,61 @@ Sub Slide_Go_To()
     End If
 End Sub
 
-Sub PresenterNotes_Remove_Text_In_Hashtags()
+Sub PresenterNotes_Remove_Text_In_Hashtags()      ' checked 1/17/20
     Dim stringBwDels As String, originalString As String, firstDelPos As Integer, secondDelPos As Integer, stringToReplace As String, replacedString As String
-    Dim sld                                       As Slide        ' declare slide object
-    Dim shp                                       As Shape        ' declare shape object
-    For Each sld In ActivePresentation.Slides        ' iterate slides
-        For Each shp In sld.NotesPage.Shapes        ' iterate note shapes
-            If shp.Type = msoPlaceholder Then        ' check if its a placeholder
-            If shp.PlaceholderFormat.Type = ppPlaceholderBody Then        ' its presenter notes
-            originalString = shp.TextFrame2.TextRange.Text
-            stringToReplace = ""
-            firstDelPos = InStr(originalString, "##") - 1        ' position of start delimiter
-            secondDelPos = InStr(firstDelPos + 2, originalString, "##")        ' position of end delimiter
-            If secondDelPos <> 0 Then
-                stringBwDels = Mid(originalString, firstDelPos + 1, secondDelPos - firstDelPos + 1)        'extract the string between two delimiters
-            Else
-                stringBwDels = 0
-            End If
-            replacedString = Replace(originalString, stringBwDels, stringToReplace)
-            shp.TextFrame2.TextRange.Text = replacedString
-        End If
+    Dim sld                                       As Slide ' declare slide object
+    Dim shp                                       As Shape ' declare shape object
+    For Each sld In ActivePresentation.Slides     ' iterate slides
+    For Each shp In sld.NotesPage.Shapes          ' iterate note shapes
+    If shp.Type = msoPlaceholder Then             ' check if its a placeholder
+    If shp.PlaceholderFormat.Type = ppPlaceholderBody Then ' its presenter notes
+    originalString = shp.TextFrame2.TextRange.Text
+    stringToReplace = ""
+    firstDelPos = InStr(originalString, "##") - 1 ' position of start delimiter
+    secondDelPos = InStr(firstDelPos + 2, originalString, "##") ' position of end delimiter
+    If secondDelPos <> 0 Then
+        stringBwDels = Mid(originalString, firstDelPos + 1, secondDelPos - firstDelPos + 2) 'extract the string between two delimiters
+    Else
+        stringBwDels = 0
     End If
-Next shp        ' end of iterate shapes
-Next sld        ' end of iterate slides
+    replacedString = Replace(originalString, stringBwDels, stringToReplace)
+    shp.TextFrame2.TextRange.Text = replacedString
+End If
+End If
+Next shp                                          ' end of iterate shapes
+Next sld                                          ' end of iterate slides
+MsgBox "All Done"
 End Sub
 
-Sub PresenterNotes_Toggle_Visibility()
+Sub PresenterNotes_Toggle_Visibility()            ' checked 1/17/20
     Dim toggleOn                                  As Boolean
     toggleOn = msoTrue
     If MsgBox("Do you want To hide all presenter note shapes On the notes pages. If you answer        'no' then they will all be made visible.", (vbYesNo + vbQuestion), "Toggle Presenter Notes?") = vbYes Then
-        toggleOn = msoFalse
-    End If
-    Dim sld                                       As Slide        ' declare slide object
-    Dim shp                                       As Shape        ' declare shape object
-    For Each sld In ActivePresentation.Slides        ' iterate slides
-        For Each shp In sld.NotesPage.Shapes        ' iterate note shapes
-            If shp.Type = msoPlaceholder Then        ' check if its a placeholder
-            If shp.PlaceholderFormat.Type = ppPlaceholderBody Then        ' its presenter notes
-            shp.Visible = toggleOn
+    toggleOn = msoFalse
+End If
+Dim sld                                       As Slide ' declare slide object
+Dim shp                                       As Shape ' declare shape object
+For Each sld In ActivePresentation.Slides         ' iterate slides
+    For Each shp In sld.NotesPage.Shapes          ' iterate note shapes
+        If shp.Type = msoPlaceholder Then         ' check if its a placeholder
+            If shp.PlaceholderFormat.Type = ppPlaceholderBody Then ' its presenter notes
+                shp.Visible = toggleOn
+            End If
         End If
-    End If
-Next shp        ' end of iterate shapes
-Next sld        ' end of iterate slides
+    Next shp                                      ' end of iterate shapes
+Next sld                                          ' end of iterate slides
 If Not CommandBars.GetPressedMso("SelectionPane") Then CommandBars.ExecuteMso ("SelectionPane")
 MsgBox "All done toggling presenter notes"
 ActiveWindow.ViewType = ppViewNotesPage
 End Sub
 
-Sub Text_Font_Reset_To_Master()
+Sub Text_Font_Reset_To_Master()                   ' checked 1/17/20
     Dim sld                                       As Slide
     Dim shp                                       As Shape
     Dim shapesAffected As Integer
     shapesAffected = shapesAffected + 1
     If MsgBox("Are you sure you want To reset all titles, text, And notes To the master font theme", (vbYesNo + vbQuestion), "Reset Font?") = vbYes Then
-        For Each sld In ActivePresentation.Slides        ' iterate slides
+        For Each sld In ActivePresentation.Slides ' iterate slides
             For Each shp In sld.Shapes
                 If shp.HasTextFrame Then
                     If shp.Type = msoPlaceholder Then
@@ -379,7 +361,7 @@ Sub Text_Font_Reset_To_Master()
                         shapesAffected = shapesAffected + 1
                     End If
                 End If
-            Next shp        ' end of iterate shapes
+            Next shp                              ' end of iterate shapes
             For Each shp In sld.NotesPage.Shapes
                 If shp.HasTextFrame Then
                     If shp.Type = msoPlaceholder Then
@@ -396,157 +378,224 @@ Sub Text_Font_Reset_To_Master()
                     End If
                 End If
             Next shp
-        Next sld        ' end of iterate slides
-        MsgBox "All Done. " & shapesAffected & " shapes have been search And reset"
+        Next sld                                  ' end of iterate slides
+        MsgBox "All Done. " & shapesAffected & " shapes have been searched And reset"
     Else
         MsgBox ("Action canceled.")
     End If
 End Sub
 
-Sub Text_Remove_Double_Spaces()
+Sub Text_Remove_Double_Spaces()                   ' checked 1/17/20
     Dim spacesRemoved As Integer
     Dim sld    As Slide
     Dim shp    As Shape
     Dim shpText As String
     spacesRemoved = 0
+    Dim shapeCount As Integer
+    shapeCount = 0
     If MsgBox("Do you want To replace all instances of multiple spaces With one space", (vbYesNo + vbQuestion), "Remove extra Spaces?") = vbYes Then
         For Each sld In ActivePresentation.Slides
             For Each shp In sld.Shapes
+                shapeCount = shapeCount + 1
                 If shp.HasTextFrame Then
-                    shpText = shp.TextFrame.TextRange.Text        'Get the shape's text
+                    shpText = shp.TextFrame.TextRange.Text 'Get the shape's text
                     Do While InStr(shpText, "  ") > 0
                         shpText = Trim(Replace(shpText, "  ", " "))
                         spacesRemoved = spacesRemoved + 1
                     Loop
-                    shp.TextFrame.TextRange.Text = shpText        'Put the new text in the shape
+                    shp.TextFrame.TextRange.Text = shpText 'Put the new text in the shape
                 Else
                     shpText = vbNullString
                 End If
             Next shp
             For Each shp In sld.NotesPage.Shapes
+                shapeCount = shapeCount + 1
                 If shp.HasTextFrame Then
-                    shpText = shp.TextFrame.TextRange.Text        'Get the shape's text
+                    shpText = shp.TextFrame.TextRange.Text 'Get the shape's text
                     Do While InStr(shpText, "  ") > 0
                         shpText = Trim(Replace(shpText, "  ", " "))
                         spacesRemoved = spacesRemoved + 1
                     Loop
-                    shp.TextFrame.TextRange.Text = shpText        'Put the new text in the shape
+                    shp.TextFrame.TextRange.Text = shpText 'Put the new text in the shape
                 Else
                     shpText = vbNullString
                 End If
             Next shp
         Next sld
     End If
-    MsgBox spacesRemoved & " places where extra spacing was removed"
+    MsgBox spacesRemoved & " places where extra spacing was removed in " & shapeCount & " shapes."
 End Sub
 
-Sub Layout_Create_All_Types()
-    Dim sld    As Slide
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutBlank)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutBlank (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutChart)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutChart (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutChartAndText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutChartAndText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutClipartAndText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutClipartAndText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutClipArtAndVerticalText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutClipArtAndVerticalText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutComparison)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutComparison (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutContentWithCaption)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutContentWithCaption (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutCustom)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutCustom (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutFourObjects)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutFourObjects (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutLargeObject)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutLargeObject (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutMediaClipAndText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutMediaClipAndText (" & sld.Layout & ")"
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutMixed (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutObject)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutObject (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutObjectAndText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutObjectAndText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutObjectAndTwoObjects)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutObjectAndTwoObjects (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutObjectOverText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutObjectOverText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutOrgchart)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutOrgchart (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutPictureWithCaption)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutPictureWithCaption (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutSectionHeader)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutSectionHeader (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTable)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTable (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTextAndChart)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTextAndChart (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTextAndClipart)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTextAndClipart (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTextAndMediaClip)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTextAndMediaClip (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTextAndObject)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTextAndObject (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTextAndTwoObjects)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTextAndTwoObjects (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTextOverObject)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTextOverObject (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTitle)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTitle (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTitleOnly)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTitleOnly (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTwoColumnText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTwoColumnText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTwoObjects)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTwoObjects (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTwoObjectsAndObject)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTwoObjectsAndObject (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTwoObjectsAndText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTwoObjectsAndText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutTwoObjectsOverText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutTwoObjectsOverText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutVerticalText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutVerticalText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutVerticalTitleAndText)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutVerticalTitleAndText (" & sld.Layout & ")"
-    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, Layout:=ppLayoutVerticalTitleAndTextOverChart)
-    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout:  ppLayoutVerticalTitleAndTextOverChart (" & sld.Layout & ")"
+Sub Layout_Create_All_Types()                     ' checked 1/17/20
+ Dim sld    As Slide
+    Dim layout As Integer
+
+    'For layout = 1 To 36
+    '  Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=layout)
+    '    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: " & sld.layout
+    'Next layout
+
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTitle)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTitle (1) - Title"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutText (2) - Text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTwoColumnText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTwoColumnText (3) - Two-column text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTable)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTable (4) - Table"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTextAndChart)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTextAndChart (5) - Text and chart"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutChartAndText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutChartAndText (6) - Chart and text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutOrgchart)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutOrgchart (7) - Organization chart"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutChart)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutChart (8) - Chart"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTextAndClipart)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTextAndClipArt (9) - Text and ClipArt"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutClipartAndText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutClipArtAndText (10) - ClipArt and text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTitleOnly)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTitleOnly (11) - Title only"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutBlank)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutBlank (12) - Blank"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTextAndObject)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTextAndObject (13) - Text and object"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutObjectAndText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutObjectAndText (14) - Object and text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutLargeObject)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutLargeObject (15) - Large object"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutObject)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutObject (16) - Object"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTextAndMediaClip)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTextAndMediaClip (17) - Text and MediaClip"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutMediaClipAndText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutMediaClipAndText (18) - MediaClip and text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutObjectOverText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutObjectOverText (19) - Object over text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTextOverObject)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTextOverObject (20) - Text over object"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTextAndTwoObjects)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTextAndTwoObjects (21) - Text and two objects"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTwoObjectsAndText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTwoObjectsAndText (22) - Two objects and text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTwoObjectsOverText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTwoObjectsOverText (23) - Two objects over text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutFourObjects)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutFourObjects (24) - Four objects"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutVerticalText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutVerticalText (25) - Vertical text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutClipArtAndVerticalText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutClipArtAndVerticalText (26) - ClipArt and vertical text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutVerticalTitleAndText)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutVerticalTitleAndText (27) - Vertical title and text"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutVerticalTitleAndTextOverChart)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutVerticalTitleAndTextOverChart (28) - Vertical title and text over chart"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTwoObjects)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTwoObjects (29) - Two objects"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutObjectAndTwoObjects)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutObjectAndTwoObjects (30) - Object and two objects"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutTwoObjectsAndObject)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutTwoObjectsAndObject (31) - Two objects and object"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutCustom)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutCustom (32) - Custom"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutSectionHeader)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutSectionHeader (33) - Section header"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutComparison)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutComparison (34) - Comparison"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutContentWithCaption)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutContentWithCaption (35) - Content with caption"
+    Set sld = ActivePresentation.Slides.Add(Index:=ActivePresentation.Slides.count + 1, layout:=ppLayoutPictureWithCaption)
+    sld.NotesPage.Shapes(2).TextFrame2.TextRange.Text = "Layout: ppLayoutPictureWithCaption (36) - Picture with caption"
 End Sub
 
-Sub Image_Add_Comment_For_Missing_AltText()
-    Dim sld    As Slide        ' declare slide object
-    Dim shp                                       As Shape        ' declare shape object
-    For Each sld In ActivePresentation.Slides        ' iterate slides
-        For Each shp In sld.Shapes        ' iterate note shapes
-            If shp.Type = msoPicture Then        ' check if its a placeholder
-            If shp.AlternativeText = "" Or InStr(shp.AlternativeText, "generated") Then
-                sld.Comments.Add 12, 12, "Auto", "JMD", "TODO: Need Image ID Or source"
+Sub Image_Add_Comment_For_Missing_AltText()       ' checked 1/17/20
+    Dim sld    As Slide                           ' declare slide object
+    Dim shp                                       As Shape ' declare shape object
+    Dim intCommentCount As Integer
+    intCommentCount = 0
+    For Each sld In ActivePresentation.Slides     ' iterate slides
+        For Each shp In sld.Shapes                ' iterate note shapes
+            If shp.Type = msoPicture Or shp.PlaceholderFormat.ContainedType = msoPicture Then ' check if its a placeholder
+                If shp.AlternativeText = "" Or InStr(shp.AlternativeText, "generated") Then
+                    sld.Comments.Add 12, 12, "Auto", "JMD", "TODO: Need Image ID Or source"
+                    intCommentCount = intCommentCount + 1
+                End If
             End If
-        End If
-    Next shp        ' end of iterate shapes
-Next sld        ' end of iterate slides
+        Next shp                                  ' end of iterate shapes
+    Next sld                                      ' end of iterate slides
+    MsgBox "All Done " & intCommentCount & " comments were added"
 End Sub
 
-Sub PresenterNotes_Add_Comment_If_Empty()
-    Dim sld    As Slide        ' declare slide object
-    Dim shp                                       As Shape        ' declare shape object
-    For Each sld In ActivePresentation.Slides        ' iterate slides
-        For Each shp In sld.NotesPage.Shapes        ' iterate note shapes
-            If shp.Type = msoPlaceholder Then        ' check if its a placeholder
-            If shp.PlaceholderFormat.Type = ppPlaceholderBody Then        ' its presenter notes
-            If shp.TextFrame.HasText = FALSE Then
-                sld.Comments.Add 12, 12, "Auto", "JMD", "TODO: Need Presenter Notes"
-            Else If shp.textframe.textrange.text = "" then
-                sld.Comments.Add 12, 12, "Auto", "JMD", "TODO: Need Presenter Notes"
+Sub PresenterNotes_Add_Comment_If_Empty()         ' checked 1/17/20
+    Dim sld    As Slide                           ' declare slide object
+    Dim shp                                       As Shape ' declare shape object
+    Dim intCommentCount As Integer
+    intCommentCount = 0
+    For Each sld In ActivePresentation.Slides     ' iterate slides
+        For Each shp In sld.NotesPage.Shapes      ' iterate note shapes
+            If shp.Type = msoPlaceholder Then     ' check if its a placeholder
+                If shp.PlaceholderFormat.Type = ppPlaceholderBody Then ' its presenter notes
+                    If shp.TextFrame.HasText = False Then
+                        sld.Comments.Add 12, 12, "Auto", "JMD", "TODO: Need Presenter Notes"
+                        intCommentCount = intCommentCount + 1
+                    ElseIf shp.TextFrame.TextRange.Text = "" Then
+                        sld.Comments.Add 12, 12, "Auto", "JMD", "TODO: Need Presenter Notes"
+                        intCommentCount = intCommentCount + 1
+                    End If
+                End If
             End If
-            replacedString = Replace(originalString, stringBwDels, stringToReplace)
-            shp.TextFrame2.TextRange.Text = replacedString
-        End If
-    End If
-Next shp        ' end of iterate shapes
-Next sld        ' end of iterate slides
+        Next shp                                  ' end of iterate shapes
+    Next sld                                      ' end of iterate slides
+    MsgBox "All Done " & intCommentCount & " comments were added"
 End Sub
+
+Sub Shapes_Go_To_Next_Non_Placeholder()
+    Dim sld                                       As Slide
+    Dim shp                                       As Shape
+    Dim currentSlideNumber                        As Integer
+    Dim startingSlideNumber                       As Integer
+    startingSlideNumber = Application.ActiveWindow.View.Slide.SlideNumber + 1
+    For currentSlideNumber = startingSlideNumber To ActivePresentation.Slides.count ' iterate slides
+        Set sld = Application.ActivePresentation.Slides(currentSlideNumber)
+        For Each shp In sld.Shapes
+            If shp.Type <> msoPlaceholder Then
+                sld.Select                        'select current slide
+                shp.Select
+                MsgBox "Non-Placeholder found On slide " & currentSlideNumber & " Shape: " & shp.Name & ". Move To the Next slide And run again To continue searching" ' outputs slide number and shape name
+                If Not CommandBars.GetPressedMso("SelectionPane") Then CommandBars.ExecuteMso ("SelectionPane") ' show selection pane
+                Exit Sub                          ' end program for user to do things
+            End If                                ' end of if type is msomedia
+        Next shp                                  ' end of iterate shapes
+    Next                                          ' end of iterate slides
+    MsgBox "No More Images Found. Move To slide 1 To search again."
+End Sub
+
+Sub Shape_Display_Type_And_Details()
+    Dim currentPresentation As Presentation
+    Set currentPresentation = ActivePresentation
+    Dim shp    As Shape
+    Dim intShapeCount As Integer
+    intShapeCount = 0
+    For Each shp In ActiveWindow.Selection.ShapeRange
+        intShapeCount = intShapeCount + 1
+        'MsgBox "Shape " & intShapeCount & " of " & ActiveWindow.Selection.ShapeRange.count & vbCrLf
+        With shp
+            MsgBox "(-1: true, 0:false)" & vbCrLf _
+                 & "Shape: " & .Name & " (" & intShapeCount & " of " & ActiveWindow.Selection.ShapeRange.count & ")" & vbCrLf _
+                 & "Has Text Frame: " & .HasTextFrame & vbCrLf _
+                 & "Has Text: " & .TextFrame.HasText & vbCrLf _
+                 & "Height: " & .Height & " points Or " & .Height / 72 & " inches" & vbCrLf _
+                 & "Width: " & .Width & " points Or " & .Width / 72 & " inches" & vbCrLf _
+                 & "LockAspectRatio: " & .LockAspectRatio & vbCrLf _
+                 & "Left: " & .Left & " points Or " & .Left / 72 & " inches" & vbCrLf _
+                 & "Top: " & .Top & " points Or " & .Top / 72 & " inches" & vbCrLf _
+                 & "Type: " & .Type & vbCrLf _
+                 & "PlaceholderFormat.Type: " & .PlaceholderFormat.Type & vbCrLf _
+                 & "PlaceholderFormat.ContainedType: " & .PlaceholderFormat.ContainedType & vbCrLf _
+                 & "Autosize: " & .TextFrame.AutoSize & "(0:no autofit, -2: shrink text, 1: resize shape)" & vbCrLf
+            
+        End With
+    Next shp
+End Sub
+
