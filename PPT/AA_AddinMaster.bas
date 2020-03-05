@@ -1,5 +1,4 @@
 Option Explicit
-
 Sub Text_Go_To_Small_Text()                       ' checked 2/25/20
     'Go to the next slide that has text smaller than specified
     Dim sld                                       As Slide
@@ -7,7 +6,10 @@ Sub Text_Go_To_Small_Text()                       ' checked 2/25/20
     Dim currentSlideNumber                        As Integer
     Dim startingSlideNumber                       As Integer
     Dim fontSize As Integer
-    fontSize = InputBox("Input font size to find text smaller than", "Font Size Smaller Than", "14")
+    Dim currentPresentation As Presentation: Set currentPresentation = ActivePresentation
+    fontSize = currentPresentation.BuiltInDocumentProperties(21)
+    fontSize = InputBox("Input font size to find text smaller than", "Font Size Smaller Than", fontSize)
+    currentPresentation.BuiltInDocumentProperties(21) = fontSize
     startingSlideNumber = Application.ActiveWindow.View.Slide.SlideNumber
     For currentSlideNumber = startingSlideNumber To ActivePresentation.Slides.count ' iterate slides
         Set sld = Application.ActivePresentation.Slides(currentSlideNumber)
@@ -17,10 +19,16 @@ Sub Text_Go_To_Small_Text()                       ' checked 2/25/20
                     ActiveWindow.View.goToSlide sld.SlideIndex
                     shp.Select
                     If MsgBox("Small text found On slide " & currentSlideNumber & " Shape: " & shp.Name & ". Fix and set to " & fontSize & "?", (vbYesNo + vbQuestion), "Set to size " & fontSize & "?") = vbYes Then
-                        shp.TextFrame.TextRange.Font.Size = fontSize
                         If shp.TextFrame.AutoSize <> ppAutoSizeShapeToFitText Or MsgBox("Shape does not autosize, do you want shape to auto scale?", (vbYesNo + vbQuestion), "Auto Size Shape?") = vbYes Then
+                            If MsgBox("Word Wrap On?", (vbYesNo + vbQuestion), "Word Wrap?") = vbYes Then
+                                shp.TextFrame.WordWrap = msoTrue
+                            End If
+                            If shp.LockAspectRatio <> msoTrue Or MsgBox("Keep aspect ratio when scaling?", (vbYesNo + vbQuestion), "Aspect Ratio?") = vbYes Then
+                                shp.LockAspectRatio = msoTrue
+                            End If
                             shp.TextFrame.AutoSize = ppAutoSizeShapeToFitText
                         End If
+                        shp.TextFrame.TextRange.Font.Size = fontSize
                     End If
                     Exit Sub
                 End If
@@ -34,30 +42,30 @@ Sub Text_Remove_Empty_Lines()
     Dim currentPresentation As Presentation: Set currentPresentation = ActivePresentation
     Dim sld    As Slide
     Dim shp    As Shape
-    Dim para As TextRange
-    Dim ln As TextRange
-    
+    Dim para   As TextRange
+    Dim ln     As TextRange
+
     For Each sld In currentPresentation.Slides
         For Each shp In sld.Shapes
             If shp.HasTextFrame Then
-            For Each para In shp.TextFrame.TextRange.Paragraphs
-            Debug.Print para
-            
-            For Each ln In para.Lines
-            Debug.Print ln
-            Next ln
-            Next para
-             '   With shp.TextFrame.TextRange
+                For Each para In shp.TextFrame.TextRange.Paragraphs
+                    Debug.Print para
+                    
+                    For Each ln In para.Lines
+                        Debug.Print ln
+                    Next ln
+                Next para
+                '   With shp.TextFrame.TextRange
                 'MsgBox .Text
-                   ' .Text = removeMultiBlank(.Text)
-             '   End With
+                ' .Text = removeMultiBlank(.Text)
+                '   End With
             End If
         Next shp
         If sld.HasNotesPage Then
             For Each shp In sld.NotesPage.Shapes
                 If shp.HasTextFrame Then
                     With shp.TextFrame.TextRange
-                   ' MsgBox .Text
+                        ' MsgBox .Text
                         .Text = removeMultiBlank(.Text)
                     End With
                 End If
