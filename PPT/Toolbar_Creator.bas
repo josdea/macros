@@ -71,6 +71,7 @@ Sub Auto_Open()
     Call createButton("Slide_Go_To", "Slide Go To", "Go to a slide by number", 29, currentToolbar)
     Call createButton("Text_Font_Reset_To_Master", "Text Font Reset", "Resets all text in all shapes and notes to master theme font", 2010, currentToolbar)
     Call createButton("Text_Language_Toggle_US_UK", "Text Language", "Toggles all text in all shapes between US and UK spelling", 5768, currentToolbar)
+    Call createButton("Text_Go_To_Small_Text", "Small Font?", "Finds font sizes smaller than font specified", 5768, currentToolbar)
     
     currentToolbar.Visible = True
     Set currentToolbar = CommandBars.Add(Name:="7", Position:=msoBarFloating, Temporary:=True)
