@@ -7,6 +7,8 @@ Sub Image_Add_Comment_For_Missing_AltText()       ' checked 1/17/20
     intCommentCount = 0
     Dim boolImageFound As Boolean
     boolImageFound = False
+    
+    If MsgBox("Are you sure you want to add comments on each slide that contains an image without alt text?", (vbYesNo + vbQuestion), "Alt Text Search?") = vbYes Then
     For Each sld In ActivePresentation.Slides     ' iterate slides
         For Each shp In sld.Shapes                ' iterate note shapes
             If shp.Type = msoPicture Then         ' check if its a placeholder
@@ -30,5 +32,6 @@ Sub Image_Add_Comment_For_Missing_AltText()       ' checked 1/17/20
             
         Next shp                                  ' end of iterate shapes
     Next sld                                      ' end of iterate slides
+    end if
     MsgBox "All Done " & intCommentCount & " comments were added"
 End Sub
