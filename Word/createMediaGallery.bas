@@ -7,14 +7,9 @@ Sub createMediaGallery()
     
     Call createMediaTable(docTempTarget)
     
-   If (MsgBox("All Done. Do you want To save at this time?", (vbYesNo + vbQuestion), "Save?") = vbYes) Then
+    If (MsgBox("All Done. Do you want To save at this time?", (vbYesNo + vbQuestion), "Save?") = vbYes) Then
         docTempTarget.Save
-  End If
-    
-   ' If (MsgBox("Do you want To run it again?", (vbYesNo + vbQuestion), "Again?") = vbYes) Then
-     '   Call updateDocumentVariable(docTempTarget, "RunningAgain", "true")
-      ' Call createMediaGallery
-   ' End If
+    End If
     
 End Sub
 Function wordDocumentSelection() As Document
@@ -69,7 +64,7 @@ Private Function readPowerpointFile() As Object
     Set objPPT = CreateObject("PowerPoint.Application")        ' Create and initialize the PowerPoint application object.
     With objPPT
         .Activate        ' Activate the PPT application object.
-        .Visible = True        ' Make it visible.
+        .Visible = TRUE        ' Make it visible.
         On Error GoTo failCleanly        ' Trap any errors and abort gracefully if the presentation file fails to open ... and remain open.
         Dim dlgOpen                               As FileDialog        ' Show the Open File dialog.
         Set dlgOpen = .FileDialog(Type:=msoFileDialogOpen)
@@ -83,7 +78,7 @@ Private Function readPowerpointFile() As Object
     End With        ' End initializing the PowerPoint object.
     statusOutput "PowerPoint Opening Completed"
     Exit Function
-failCleanly:
+    failCleanly:
     MsgBox "We had some trouble reading the PowerPoint file. To continue, try re-running the macro. If that still does Not work try closing Word completely And restarting it before rerunning the macro again.", Buttons:=vbExclamation, Title:="PowerPoint Had Trouble"
     End
     With objPPT
@@ -104,6 +99,16 @@ Function createMediaTable(docTempTarget As Document)
     Dim intSlideNumber As Integer: intSlideNumber = 0
     Dim dblRowHeight As Double
     Set objSrcFile = promptPowerpointFile()        'Open Powerpoint PPT file
+    Dim boolShowSldNumb As Boolean: boolShowSldNumb = FALSE
+    Dim boolShowAutoAltText As Boolean: boolShowAutoAltText = FALSE
+    
+    If (MsgBox("Do you want To display slide number With source info?", (vbYesNo + vbQuestion), "Slide Number?") = vbYes) Then
+        boolShowSldNumb = TRUE
+    End If
+    If (MsgBox("Do you want To show auto-generated Alt-Text?", (vbYesNo + vbQuestion), "Slide Number?") = vbYes) Then
+        boolShowAutoAltText = TRUE
+    End If
+    
     docTempTarget.Activate
     
     dblRowHeight = 0.5
@@ -111,10 +116,13 @@ Function createMediaTable(docTempTarget As Document)
     dblImgWidth = 1
     
     With objSrcFile
-        For Each sld In .Slides
+        For Each sld In .slides
+            Application.StatusBar = "Checking images On " & sld.slidenumber & " of " & objSrcFile.slides.Count
+            
+            Call completionBar(sld.slidenumber, objSrcFile.slides.Count)
             intSlideNumber = intSlideNumber + 1
             
-            If sld.slideNumber = 1 Then        'so look to first slide for title
+            If sld.slidenumber = 1 Then        'so look to first slide for title
             
             With Selection        'Begin new table
                 .MoveEnd Unit:=wdStory        ' Get clear of any content
@@ -130,18 +138,15 @@ Function createMediaTable(docTempTarget As Document)
                 
                 Set tblGuide = docTempTarget.Tables.Add(Range:=Selection.Range, NumRows:=1, NumColumns:=2, DefaultTableBehavior:=wdWord9TableBehavior, AutoFitBehavior:=wdAutoFitFixed)
                 With tblGuide
-                    '.Rows.HeightRule = wdRowHeightAtLeast
-                    '.Rows.Height = InchesToPoints(dblRowHeight)
                     .PreferredWidthType = wdPreferredWidthPercent
                     .PreferredWidth = 100
-                   .TopPadding = 0.1 * 72
-                   .BottomPadding = 0.1 * 72
+                    .TopPadding = 0.1 * 72
+                    .BottomPadding = 0.1 * 72
                     .PreferredWidthType = wdPreferredWidthPercent
                     .Columns(1).PreferredWidth = 80
                     .Columns(2).Cells.VerticalAlignment = wdCellAlignVerticalCenter
-                    '.Columns(2).PreferredWidth = 80
                     .Columns(1).Select
-                       Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
+                    Selection.ParagraphFormat.Alignment = wdAlignParagraphCenter
                 End With
                 tblGuide.Cell(1, 1).Select
                 .End = .Start
@@ -150,8 +155,7 @@ Function createMediaTable(docTempTarget As Document)
                 .End = .Start
                 .TypeText ("Source Information")
             End With
-        ElseIf sld.slideNumber = .Slides.Count Then        'last slide in presentaiton
-        Call setTableFormat(tblGuide)
+        ElseIf sld.slidenumber = .slides.Count Then        'last slide in presentaiton
         
     End If        'slide 1
     
@@ -166,14 +170,27 @@ Function createMediaTable(docTempTarget As Document)
                     shp.Copy
                     .Paste
                     .MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-                                    With .InlineShapes(1)
-                                        .LockAspectRatio = msoCTrue ' Lock the aspect ratio.
-                                        .ScaleWidth = 25          ' Scale to 1" width, leaving height as-is.
-                                    End With    ' Stop working with the pasted image shape.
-                                    
+                    With .InlineShapes(1)
+                        .LockAspectRatio = msoCTrue        ' Lock the aspect ratio.
+                        .Reset
+                        .Width = 72
+                    End With        ' Stop working with the pasted image shape.
+                    
                     .MoveRight Unit:=wdCell, Count:=1
-                    strAltText = shp.AlternativeText & "test"
-                    .TypeText (strAltText)
+                    
+                    If boolShowSldNumb = TRUE Then
+                        strAltText = "Slide " & sld.slidenumber & vbCrLf
+                        
+                    End If
+                    
+                    If InStr(shp.AlternativeText, "generated") And boolShowAutoAltText = FALSE Then
+                        
+                        .TypeText (strAltText)
+                    Else
+                        strAltText = strAltText & shp.AlternativeText
+                        .TypeText (strAltText)
+                    End If
+                    
                 End If
             Next shp
             
@@ -181,37 +198,9 @@ Function createMediaTable(docTempTarget As Document)
         
     End With        'docTempTarget
 Next sld
-
 End With        'objSrcFile
-
-'If (MsgBox("Finished With PPT File. Do you want To close it?", (vbYesNo + vbQuestion), "Close PPT?") = vbYes) Then
- '   objSrcFile.Close
-'End If
-
-'Call setTableFormat(tblGuide)        'TODO move backt o main at top maybe or
-
 With ActiveWindow
     .View.ShowHeading 2
-    .DocumentMap = True
+    .DocumentMap = TRUE
 End With
-
-End Function
-
-Function checkIfImage(shp As Shape, sld As Slid, docTempTarget As Documente)
-   If shp.Type = 13 Then
-                    .MoveRight Unit:=wdCell, Extend:=wdMove        ' Move right again to create the next line in the table if it isnt the first slide
-                    .End = .Start
-                    shp.Copy
-                    .Paste
-                    .MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdExtend
-                                    With .InlineShapes(1)
-                                        .LockAspectRatio = msoCTrue ' Lock the aspect ratio.
-                                        .ScaleWidth = 25          ' Scale to 1" width, leaving height as-is.
-                                    End With    ' Stop working with the pasted image shape.
-                                    
-                    .MoveRight Unit:=wdCell, Count:=1
-                    strAltText = shp.AlternativeText & "test"
-                    .TypeText (strAltText)
-                End If
-End If
 End Function
